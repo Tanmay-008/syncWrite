@@ -22,14 +22,6 @@ const features = [
 export function HeroSection() {
   return (
     <section className="flex flex-col items-center justify-center px-6 pt-32 pb-20">
-      {/* Badge */}
-      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-sm font-medium text-slate-600 shadow-sm">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-        </span>
-        Collaborative editing — live now
-      </div>
 
       {/* Title */}
       <h1 className="max-w-3xl text-center text-5xl leading-tight font-bold tracking-tight text-slate-900 sm:text-6xl">
