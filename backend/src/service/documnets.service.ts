@@ -1,11 +1,11 @@
 import { Document } from "../model/document.model";
+import { ApiError } from "../utils/ApiError";
 
-export const documentService = async () => {
+export const documentService = async (documentName?: string) => {
     try {
-        const d = await Document.create({});
-        return d;
-    } catch (error) {
-        return
+        const document = await Document.create(documentName ? { documentName } : {});
+        return document;
+    } catch (error: any) {
+        throw new ApiError(500, "Document creation failed", error?.message);
     }
-
 }

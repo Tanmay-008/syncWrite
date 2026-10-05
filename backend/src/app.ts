@@ -20,4 +20,4 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 import { router } from "./routes/documnets.routes";
-app.use("api/v1/documents", router);
+app.use("/api/v1/documents", router);
