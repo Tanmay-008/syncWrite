@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
+      tailwindcss(),
       babel({ presets: [reactCompilerPreset()] })
     ],
   };
