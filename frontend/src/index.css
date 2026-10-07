@@ -132,3 +132,67 @@
     @apply font-sans;
   }
 }
+
+@layer utilities {
+  .ProseMirror {
+    > * + * {
+      margin-top: 0.75em;
+    }
+
+    p {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      line-height: 1.1;
+      font-weight: 700;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    h1 { font-size: 2.25rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    
+    ul { list-style-type: disc; padding-left: 1.5rem; margin-top: 0.5em; margin-bottom: 0.5em; }
+    ol { list-style-type: decimal; padding-left: 1.5rem; margin-top: 0.5em; margin-bottom: 0.5em; }
+    
+    blockquote {
+      border-left: 3px solid var(--color-border);
+      padding-left: 1rem;
+      margin-left: 0;
+      margin-right: 0;
+      font-style: italic;
+    }
+
+    code {
+      background-color: var(--color-muted);
+      border-radius: 0.25rem;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.875em;
+    }
+    
+    pre {
+      background: var(--color-foreground);
+      color: var(--color-background);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      
+      code {
+        color: inherit;
+        padding: 0;
+        background: none;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .ProseMirror p:empty:first-child::before {
+    content: "Start writing...";
+    color: var(--color-muted-foreground);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+}
