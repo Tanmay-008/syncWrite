@@ -15,7 +15,8 @@ export type MessageType =
     | 'doc:join'
     | 'doc:sync'
     | 'crdt:op'
-    | 'ui:cursor';
+    | 'ui:cursor'
+    | 'error';
 
 export type SyncWriteMessage =
     | {
@@ -41,4 +42,9 @@ export type SyncWriteMessage =
         docId: string;
         clientId: string;
         payload: { leftNodeId: CRDTId | null };
+    }
+    | {
+        type: 'error';
+        message: string;
+        code?: string;
     };
