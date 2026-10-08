@@ -3,7 +3,6 @@ import { HeroSection } from "@/components/landing/HeroSection";
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Subtle grid background */}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
@@ -14,7 +13,6 @@ export function LandingPage() {
       />
 
       <div className="relative">
-        {/* Minimal nav */}
         <nav className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
