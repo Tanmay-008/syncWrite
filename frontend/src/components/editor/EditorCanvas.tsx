@@ -1,35 +1,11 @@
-import { useState, useEffect } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { EditorContent, Editor } from "@tiptap/react";
 
 interface EditorCanvasProps {
-  initialContent?: string;
-  onChange?: (content: string) => void;
+  editor: Editor | null;
 }
 
-export function EditorCanvas({ initialContent = "", onChange }: EditorCanvasProps = {}) {
-  const [content, setContent] = useState(initialContent);
-
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: initialContent,
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      setContent(html);
-      onChange?.(html);
-    },
-    editorProps: {
-      attributes: {
-        class: "w-full focus:outline-none min-h-[60vh] text-base leading-relaxed text-slate-800",
-        style: "font-family: 'Geist Variable', sans-serif",
-      },
-    },
-  });
-
-  useEffect(() => {
-    if (editor && initialContent !== content) {
-    }
-  }, [initialContent, editor, content]);
+export function EditorCanvas({ editor }: EditorCanvasProps) {
+  if (!editor) return null;
 
   return (
     <div className="flex-1 bg-slate-50/50 px-6 py-10">
