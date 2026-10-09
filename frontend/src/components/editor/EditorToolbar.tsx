@@ -55,7 +55,7 @@ function ToolbarGroup({ actions, editor }: { actions: ToolbarAction[], editor: E
     <div className="flex items-center gap-0.5">
       {actions.map((action) => (
         <Tooltip key={action.label}>
-          <TooltipTrigger asChild>
+          <TooltipTrigger render={
             <Toggle
               size="sm"
               pressed={action.isActive(editor)}
@@ -66,7 +66,7 @@ function ToolbarGroup({ actions, editor }: { actions: ToolbarAction[], editor: E
             >
               <action.icon className="h-4 w-4" />
             </Toggle>
-          </TooltipTrigger>
+          } />
           <TooltipContent side="bottom" className="flex items-center gap-2">
             <span>{action.label}</span>
             {action.shortcut && (
