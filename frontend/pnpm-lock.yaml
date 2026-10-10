@@ -20,6 +20,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@24.19.0)(jiti@2.7.0))
+      '@tiptap/extension-collaboration':
+        specifier: ^3.31.4
+        version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33))(yjs@13.6.33)
       '@tiptap/pm':
         specifier: ^3.31.4
         version: 3.31.4
@@ -29,6 +32,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.31.4
         version: 3.31.4
+      '@tiptap/y-tiptap':
+        specifier: ^3.0.9
+        version: 3.0.9(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
       axios:
         specifier: ^1.20.0
         version: 1.20.0
@@ -71,6 +77,12 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      y-protocols:
+        specifier: ^1.0.7
+        version: 1.0.7(yjs@13.6.33)
+      yjs:
+        specifier: ^13.6.33
+        version: 13.6.33
     devDependencies:
       '@babel/core':
         specifier: ^7.29.7
@@ -717,6 +729,14 @@ packages:
     peerDependencies:
       '@tiptap/core': 3.31.4
 
+  '@tiptap/extension-collaboration@3.31.4':
+    resolution: {integrity: sha512-vIGuBU2oV1jIr0zGPdWc1qFo4NrzObktC06s8Z0zYCb59hm3lfnYzw0w4R2i/BYjjoKRgpiDVYweGAQHuLT7Vw==}
+    peerDependencies:
+      '@tiptap/core': 3.31.4
+      '@tiptap/pm': 3.31.4
+      '@tiptap/y-tiptap': ^3.0.7
+      yjs: ^13
+
   '@tiptap/extension-document@3.31.4':
     resolution: {integrity: sha512-vT20u62RWR+BLIyNJ54e24MPUY4zm8VF7tcgJnxQXi7BgVJWcNMtMWWDIkPJ4JNXwfoIznKh3jzYsaYmbCJgQQ==}
     peerDependencies:
@@ -828,6 +848,16 @@ packages:
 
   '@tiptap/starter-kit@3.31.4':
     resolution: {integrity: sha512-u7HIJ9vK6kFe4S4J2CIcDLrhRZzoTMSyU0XxjQ6lUNF7pWW3rMi//pvi8RcsZmxGjyb8CpXAqYgNl7f9WyaUeA==}
+
+  '@tiptap/y-tiptap@3.0.9':
+    resolution: {integrity: sha512-7/El8NQ8R5V5MkdrOUdfj9IgZacpt0H071xNimX7B0AnYiWiKefQnMKd41neQYzo2MOXbWdN3iZ+7Z7BruzOSA==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      prosemirror-model: ^1.7.1
+      prosemirror-state: ^1.2.3
+      prosemirror-view: ^1.9.10
+      y-protocols: ^1.0.1
+      yjs: ^13.5.38
 
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
@@ -1511,6 +1541,9 @@ packages:
     resolution: {integrity: sha512-6B3tLtFqtQS4ekarvLVMZ+X+VlvQekbe4taUkf/rhVO3d/h0M2rfARm/pXLcPEsjjMsFgrFgSrhQIxcSVrBz8w==}
     engines: {node: '>=18'}
 
+  isomorphic.js@0.2.5:
+    resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
+
   jiti@2.7.0:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
@@ -1557,6 +1590,11 @@ packages:
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
+
+  lib0@0.2.119:
+    resolution: {integrity: sha512-vh+TiejVy8Xm+hCdnRfn9BthGNvNUZdEXltNjVZL3TzRIKP3s1lnQh8pWd/Q0wCgY0FPAGVVjFF4ZiHUV3LFgA==}
+    engines: {node: '>=16'}
+    hasBin: true
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
@@ -2373,8 +2411,18 @@ packages:
     resolution: {integrity: sha512-Hl0ZOAs672vg+06kfujwRhoS6/jehvULrlFkuF2dRu6pHgA8U06h3xqNIqNNU1LTXPcedxByAR4GS6pwQK0mgA==}
     engines: {node: '>=20'}
 
+  y-protocols@1.0.7:
+    resolution: {integrity: sha512-YSVsLoXxO67J6eE/nV4AtFtT3QEotZf5sK5BHxFBXso7VDUT3Tx07IfA6hsu5Q5OmBdMkQVmFZ9QOA7fikWvnw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      yjs: ^13.0.0
+
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
+
+  yjs@13.6.33:
+    resolution: {integrity: sha512-q/UYvr1gOk4XII+Cu1CW2dINjYqJJFifTzogEaIARznrvX7uOlHsdTEXcnOBMuIsrCGEEKdNxi74kyMLZlKVfw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
 
   yocto-spinner@1.2.2:
     resolution: {integrity: sha512-DODGl1wJjA/s5pnJFKau9lIYHT81lnhob1i3e1TjxZRxEhWRKl74nTbWE6H5KlkViQQTo/Z29YFdxzTZAMY3ng==}
@@ -2935,6 +2983,13 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.31.4(@tiptap/pm@3.31.4)
 
+  '@tiptap/extension-collaboration@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4)(@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33))(yjs@13.6.33)':
+    dependencies:
+      '@tiptap/core': 3.31.4(@tiptap/pm@3.31.4)
+      '@tiptap/pm': 3.31.4
+      '@tiptap/y-tiptap': 3.0.9(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
+      yjs: 13.6.33
+
   '@tiptap/extension-document@3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))':
     dependencies:
       '@tiptap/core': 3.31.4(@tiptap/pm@3.31.4)
@@ -3074,6 +3129,15 @@ snapshots:
       '@tiptap/extension-underline': 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
       '@tiptap/extensions': 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4)
       '@tiptap/pm': 3.31.4
+
+  '@tiptap/y-tiptap@3.0.9(prosemirror-model@1.25.12)(prosemirror-state@1.4.4)(prosemirror-view@1.42.6)(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)':
+    dependencies:
+      lib0: 0.2.119
+      prosemirror-model: 1.25.12
+      prosemirror-state: 1.4.4
+      prosemirror-view: 1.42.6
+      y-protocols: 1.0.7(yjs@13.6.33)
+      yjs: 13.6.33
 
   '@ts-morph/common@0.27.0':
     dependencies:
@@ -3699,6 +3763,8 @@ snapshots:
 
   isexe@3.1.5: {}
 
+  isomorphic.js@0.2.5: {}
+
   jiti@2.7.0: {}
 
   jose@6.2.12: {}
@@ -3730,6 +3796,10 @@ snapshots:
   kleur@3.0.3: {}
 
   kleur@4.1.5: {}
+
+  lib0@0.2.119:
+    dependencies:
+      isomorphic.js: 0.2.5
 
   lightningcss-android-arm64@1.32.0:
     optional: true
@@ -4507,7 +4577,16 @@ snapshots:
       is-wsl: 3.1.1
       powershell-utils: 0.1.0
 
+  y-protocols@1.0.7(yjs@13.6.33):
+    dependencies:
+      lib0: 0.2.119
+      yjs: 13.6.33
+
   yallist@3.1.1: {}
+
+  yjs@13.6.33:
+    dependencies:
+      lib0: 0.2.119
 
   yocto-spinner@1.2.2:
     dependencies:
