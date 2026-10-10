@@ -9,7 +9,7 @@ export const createDocument = async (documentName?: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error creating document:", error);
+    console.error("Error creating document:Backend server is not connected, please start the backend server ", error);
     throw error;
   }
 };
