@@ -12,19 +12,23 @@ import { ConnectionBadge, type ConnectionStatus } from "./ConnectionBadge";
 
 interface EditorHeaderProps {
   docId: string;
+  status?: ConnectionStatus;
+  collaborators?: Collaborator[];
 }
 
-// Mock collaborators — replace with real data from your WebSocket/API
 const mockCollaborators: Collaborator[] = [
   { id: "1", name: "Tanmay S", color: "#6366f1", isOnline: true },
   { id: "2", name: "Alex Chen", color: "#f43f5e", isOnline: true },
   { id: "3", name: "Jordan Lee", color: "#0ea5e9", isOnline: false },
 ];
 
-export function EditorHeader({ docId }: EditorHeaderProps) {
+export function EditorHeader({
+  docId,
+  status = "connected",
+  collaborators = mockCollaborators,
+}: EditorHeaderProps) {
   const navigate = useNavigate();
   const [title, setTitle] = useState("Untitled Document");
-  const connectionStatus: ConnectionStatus = "connected";
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -54,9 +58,9 @@ export function EditorHeader({ docId }: EditorHeaderProps) {
 
         {/* Right: Collaborators + Share + Status */}
         <div className="flex items-center gap-3">
-          <ConnectionBadge status={connectionStatus} />
+          <ConnectionBadge status={status} />
           <Separator orientation="vertical" className="h-6" />
-          <CollaboratorAvatars collaborators={mockCollaborators} />
+          <CollaboratorAvatars collaborators={collaborators} />
           <ShareModal docId={docId} />
         </div>
       </div>
