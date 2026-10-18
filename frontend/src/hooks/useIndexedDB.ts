@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import * as Y from 'yjs';
+import type * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
 
 interface UseIndexedDBProps {
@@ -19,7 +19,11 @@ export function useIndexedDB({ docId, ydoc }: UseIndexedDBProps) {
             setIsIndexedDBSynced(true);
         };
 
-        provider.on('synced', handleSynced);
+        if (provider.synced) {
+            setIsIndexedDBSynced(true);
+        } else {
+            provider.on('synced', handleSynced);
+        }
 
         return () => {
             provider.off('synced', handleSynced);
