@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createDocument } from "@/api/documentApi";
 import {
@@ -18,24 +18,48 @@ export function CreateDocButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [docName, setDocName] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      setErrorMessage(null);
+      setDocName("");
+    }
+  };
 
   const handleCreate = async () => {
     setIsLoading(true);
+    setErrorMessage(null);
+
     try {
       const response = await createDocument(docName.trim());
-      const newDoc = response.data;
+      const newDoc = response?.data;
+      const docId = newDoc?._id || newDoc?.id;
+
+      if (!docId) {
+        setErrorMessage("Server did not return a valid document ID. Please try again.");
+        return;
+      }
+
       setOpen(false);
-      navigate(`/document/${newDoc._id}`);
-    } catch (error) {
+      setDocName("");
+      navigate(`/document/${docId}`);
+    } catch (error: any) {
       console.error("Failed to create document", error);
+      const serverMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Backend server is unavailable or creation failed. Please check your connection.";
+      setErrorMessage(serverMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
@@ -54,17 +78,39 @@ export function CreateDocButton() {
             Give your document a name. You can also leave it empty to use the default name.
           </DialogDescription>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
           <Input
             id="name"
             placeholder="Document Name (e.g. My Notes)"
             value={docName}
-            onChange={(e) => setDocName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+            onChange={(e) => {
+              setDocName(e.target.value);
+              if (errorMessage) setErrorMessage(null);
+            }}
+            onKeyDown={(e) => e.key === "Enter" && !isLoading && handleCreate()}
             autoFocus
           />
+
+          {errorMessage && (
+            <div className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 animate-in fade-in duration-200">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 mt-0.5" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
         </div>
-        <DialogFooter>
+
+        <DialogFooter className="flex items-center gap-2">
+          {errorMessage && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleOpenChange(false)}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+          )}
           <Button disabled={isLoading} onClick={handleCreate}>
             {isLoading ? (
               <>
