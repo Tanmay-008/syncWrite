@@ -5,7 +5,7 @@ import { HocuspocusProviderWebsocketComponent } from "@hocuspocus/provider-react
 
 export function App() {
   return (
-    <HocuspocusProviderWebsocketComponent url="ws://localhost:1234">
+    <HocuspocusProviderWebsocketComponent url="ws://localhost:4000">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
