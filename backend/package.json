@@ -14,8 +14,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@hocuspocus/server": "^4.7.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "crossws": "^0.4.15",
     "dotenv": "^18.0.4",
     "express": "^5.2.1",
     "is-url": "^1.2.4",
