@@ -1,5 +1,6 @@
-import { SyncWriteEditor } from "@/components/editor/SyncWriteEditor";
+import { HocuspocusRoom } from "@hocuspocus/provider-react";
 import { useParams, Navigate } from "react-router-dom";
+import { SyncWriteEditor } from "@/components/editor/SyncWriteEditor";
 
 export function DocumentPage() {
   const { docId } = useParams<{ docId: string }>();
@@ -8,5 +9,15 @@ export function DocumentPage() {
     return <Navigate to="/" replace />;
   }
 
-  return <SyncWriteEditor docId={docId} />;
+  return (
+    <HocuspocusRoom
+      name={docId}
+      flushDelay={100}
+      onAuthenticationFailed={({ reason }) => {
+        console.warn("Auth failed for room:", docId, reason);
+      }}
+    >
+      <SyncWriteEditor docId={docId} />
+    </HocuspocusRoom>
+  );
 }
