@@ -1,10 +1,13 @@
 import { EditorContent, Editor } from "@tiptap/react";
 
 interface EditorCanvasProps {
-  editor: Editor | null;
+  editor?: Editor | null;
 }
 
-export function EditorCanvas({ editor }: EditorCanvasProps) {
+export function EditorCanvas({ editor: propEditor }: EditorCanvasProps = {}) {
+
+  const editor = propEditor
+
   if (!editor) return null;
 
   return (
@@ -12,7 +15,7 @@ export function EditorCanvas({ editor }: EditorCanvasProps) {
       <div className="mx-auto max-w-4xl">
         <div
           className="min-h-[70vh] rounded-xl border border-slate-200 bg-white px-16 py-12 shadow-sm transition-shadow focus-within:shadow-md cursor-text"
-          onClick={() => editor?.commands.focus()}
+          onClick={() => editor.commands.focus()}
         >
           <EditorContent editor={editor} />
         </div>
