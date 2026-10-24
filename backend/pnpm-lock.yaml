@@ -60,6 +60,9 @@ importers:
       '@types/is-url':
         specifier: ^1.2.32
         version: 1.2.32
+      '@types/jsonwebtoken':
+        specifier: ^9.0.10
+        version: 9.0.10
       '@types/node':
         specifier: ^26.6.3
         version: 26.6.3
@@ -603,6 +606,12 @@ packages:
 
   '@types/is-url@1.2.32':
     resolution: {integrity: sha512-46VLdbWI8Sc+hPexQ6NLNR2YpoDyDZIpASHkJQ2Yr+Kf9Giw6LdCTkwOdsnHKPQeh7xTjTmSnxbE8qpxYuCiHA==}
+
+  '@types/jsonwebtoken@9.0.10':
+    resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
+
+  '@types/ms@2.1.0':
+    resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
   '@types/node@26.6.3':
     resolution: {integrity: sha512-dsqMQQoeTLqu9wynDD00q573mNzso3IdQOAfHRJqLCcmCFPoGo9A1bDpUcv/9tnKpErQWv9uKeGfl37EIS02Yg==}
@@ -1799,6 +1808,13 @@ snapshots:
   '@types/http-errors@2.0.5': {}
 
   '@types/is-url@1.2.32': {}
+
+  '@types/jsonwebtoken@9.0.10':
+    dependencies:
+      '@types/ms': 2.1.0
+      '@types/node': 26.6.3
+
+  '@types/ms@2.1.0': {}
 
   '@types/node@26.6.3':
     dependencies:
