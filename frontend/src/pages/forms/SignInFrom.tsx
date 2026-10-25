@@ -7,11 +7,13 @@ import {
     IconBrandGithub,
     IconBrandGoogle,
 } from "@tabler/icons-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSignIn } from "@/hooks/useSignIn";
 
 export default function SignInForm() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = (location.state as any)?.from?.pathname || "/";
     const { signInUser, isLoading, error } = useSignIn();
 
     const [data, setData] = useState({
@@ -31,7 +33,7 @@ export default function SignInForm() {
         e.preventDefault();
         const success = await signInUser(data.userName, data.password);
         if (success) {
-            navigate("/");
+            navigate(from, { replace: true });
         }
     };
 
@@ -96,7 +98,11 @@ export default function SignInForm() {
                 <div className="mt-6 text-center">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         Don’t have an account?{" "}
-                        <Link to="/signup" className="group/link relative inline-flex items-center text-blue-600 font-medium transition-colors hover:text-blue-700">
+                        <Link
+                            to="/signup"
+                            state={{ from: (location.state as any)?.from }}
+                            className="group/link relative inline-flex items-center text-blue-600 font-medium transition-colors hover:text-blue-700"
+                        >
                             <span>Sign up now</span>
                             <span className="absolute inset-x-0 -bottom-0.5 block h-0.5 w-full bg-gradient-to-r from-cyan-500 to-indigo-500 opacity-0 transition-opacity duration-300 group-hover/link:opacity-100" />
                         </Link>

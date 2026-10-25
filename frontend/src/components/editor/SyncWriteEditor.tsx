@@ -1,4 +1,5 @@
 import { useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Collaboration from "@tiptap/extension-collaboration";
@@ -29,12 +30,21 @@ export function SyncWriteEditor({
     userName: propUserName,
     userColor: propUserColor,
 }: SyncWriteEditorProps) {
+    const navigate = useNavigate();
+    const location = useLocation();
     const storeUser = useAuthStore((state) => state.user);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const checkAuth = useAuthStore((state) => state.checkAuth);
 
     useEffect(() => {
         checkAuth();
     }, [checkAuth]);
+
+    useEffect(() => {
+        if (!isAuthenticated || !storeUser) {
+            navigate("/signin", { replace: true, state: { from: location } });
+        }
+    }, [isAuthenticated, storeUser, navigate, location]);
 
     const userSession = useMemo(() => {
         if (storeUser?.userName) {

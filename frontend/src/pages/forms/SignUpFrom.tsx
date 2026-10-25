@@ -8,11 +8,13 @@ import {
     IconBrandGoogle,
     IconBrandOnlyfans,
 } from "@tabler/icons-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSignUp } from "@/hooks/useSignUp";
 
 export default function SignupFormDemo() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = (location.state as any)?.from?.pathname || "/";
     const { signUpUser, isLoading, error } = useSignUp();
 
     const [data, setData] = useState({
@@ -33,7 +35,7 @@ export default function SignupFormDemo() {
         e.preventDefault();
         const success = await signUpUser(data.userName, data.email, data.password);
         if (success) {
-            navigate("/");
+            navigate(from, { replace: true });
         }
     };
 
@@ -98,7 +100,11 @@ export default function SignupFormDemo() {
                 <div className="mt-6 text-center">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         Already have an account?{" "}
-                        <Link to="/signin" className="text-blue-600 hover:underline hover:text-blue-700 font-medium">
+                        <Link
+                            to="/signin"
+                            state={{ from: (location.state as any)?.from }}
+                            className="text-blue-600 hover:underline hover:text-blue-700 font-medium"
+                        >
                             Sign in now
                         </Link>
                     </p>
