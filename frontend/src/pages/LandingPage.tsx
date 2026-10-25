@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 
 export function LandingPage() {
@@ -31,6 +32,16 @@ export function LandingPage() {
             <span className="text-sm font-semibold tracking-tight text-slate-900">
               SyncWrite
             </span>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/signin"
+              className="group/btn relative inline-flex h-9 items-center justify-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-xs transition-all hover:bg-slate-50 hover:text-slate-900"
+            >
+              <span>Sign in</span>
+              <span className="absolute inset-x-0 -bottom-px block h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
+            </Link>
           </div>
         </nav>
 
