@@ -40,6 +40,7 @@
     "clsx": "^2.1.1",
     "cn": "^0.4.0",
     "framer-motion": "^13.4.4",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^1.48.0",
     "motion": "^13.4.4",
     "react": "^19.2.8",
