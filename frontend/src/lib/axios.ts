@@ -1,12 +1,18 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
+const getBaseUrl = () => {
+    if (import.meta.env.ENVIRONMENT === "production") {
+        return "https://api-syncwrite.tanmayshirbhayye.tech/api/v1";
+    }
+    return "http://localhost:4000/api/v1";
+};
+
 const axiosConfig = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || "https://api-url-shortener.tanmayshirbhayye.tech/api/v1/url",
+    baseURL: getBaseUrl(),
     timeout: 15000,
     responseType: "json",
     withCredentials: true,
 });
-
 
 axiosConfig.interceptors.response.use(
     (response) => response,
@@ -22,7 +28,6 @@ interface ApiRequestParams extends AxiosRequestConfig {
     data?: any;
     params?: any;
 }
-
 
 export async function apiRequest<T = any>({
     method,
@@ -40,7 +45,6 @@ export async function apiRequest<T = any>({
 
     return axiosConfig(finalConfig);
 }
-
 
 export const axiosAPI = {
     get: (url: string, params?: any, config?: AxiosRequestConfig) =>
