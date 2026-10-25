@@ -17,31 +17,18 @@ export const COLLAB_PALETTE = [
   "#3b82f6", // Blue
 ];
 
-const DEFAULT_NAMES = [
-  "Tanmay",
-  "Alex",
-  "Sam",
-  "Jordan",
-  "Morgan",
-  "Casey",
-  "Taylor",
-  "Riley",
-  "Jamie",
-  "Quinn",
-];
-
 const STORAGE_KEY = "syncwrite_user_session";
 
 export function getOrCreateUserSession(): UserSession {
   if (typeof window === "undefined") {
-    return { id: "server", name: "Tanmay", color: "#6366f1" };
+    return { id: "guest", name: "Guest", color: "#6366f1" };
   }
 
   try {
     const stored = sessionStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed.id && parsed.name && parsed.color) {
+      if (parsed.id && parsed.name === "Guest" && parsed.color) {
         return parsed;
       }
     }
@@ -49,14 +36,10 @@ export function getOrCreateUserSession(): UserSession {
     console.warn("Failed to read user session from sessionStorage", e);
   }
 
-  // Generate a distinct color and name for this browser tab/session
+  // Generate a distinct color for this guest session
   const color = COLLAB_PALETTE[Math.floor(Math.random() * COLLAB_PALETTE.length)];
-  const nameBase = DEFAULT_NAMES[Math.floor(Math.random() * DEFAULT_NAMES.length)];
-  const randomSuffix = Math.floor(Math.random() * 900 + 100);
-  const name = `${nameBase} ${randomSuffix}`;
-  const id = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-
-  const newSession: UserSession = { id, name, color };
+  const id = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const newSession: UserSession = { id, name: "Guest", color };
 
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
@@ -67,11 +50,11 @@ export function getOrCreateUserSession(): UserSession {
   return newSession;
 }
 
-export function saveUserSession(session: UserSession): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  } catch (e) {
-    console.warn("Failed to save user session", e);
+export function getUserColor(idOrName: string): string {
+  let hash = 0;
+  for (let i = 0; i < idOrName.length; i++) {
+    hash = idOrName.charCodeAt(i) + ((hash << 5) - hash);
   }
+  const index = Math.abs(hash) % COLLAB_PALETTE.length;
+  return COLLAB_PALETTE[index];
 }

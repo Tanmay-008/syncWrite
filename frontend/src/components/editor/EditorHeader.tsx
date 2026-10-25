@@ -17,16 +17,10 @@ interface EditorHeaderProps {
   currentUser?: { name: string; color: string };
 }
 
-const mockCollaborators: Collaborator[] = [
-  { id: "1", name: "Tanmay S", color: "#6366f1", isOnline: true },
-  { id: "2", name: "Alex Chen", color: "#f43f5e", isOnline: true },
-  { id: "3", name: "Jordan Lee", color: "#0ea5e9", isOnline: false },
-];
-
 export function EditorHeader({
   docId,
   status = "connected",
-  collaborators = mockCollaborators,
+  collaborators = [],
   currentUser,
 }: EditorHeaderProps) {
   const navigate = useNavigate();
@@ -61,13 +55,15 @@ export function EditorHeader({
         {/* Right: Current User Pill + Collaborators + Share + Status */}
         <div className="flex items-center gap-3">
           {currentUser && (
-            <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 py-1 pl-1.5 pr-3 text-xs text-slate-700 shadow-xs">
               <span
-                className="h-2 w-2 rounded-full ring-2 ring-white"
+                className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-xs"
                 style={{ backgroundColor: currentUser.color }}
-              />
-              <span className="font-medium text-slate-700 max-w-[120px] truncate">
-                {currentUser.name} (You)
+              >
+                {currentUser.name.charAt(0).toUpperCase()}
+              </span>
+              <span className="font-medium max-w-[120px] truncate">
+                {currentUser.name} <span className="text-slate-400 font-normal">(You)</span>
               </span>
             </div>
           )}

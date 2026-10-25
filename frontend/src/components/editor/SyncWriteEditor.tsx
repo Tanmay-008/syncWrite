@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Collaboration from "@tiptap/extension-collaboration";
@@ -14,8 +14,9 @@ import { EditorToolbar } from "@/components/editor/EditorToolbar";
 import { EditorCanvas } from "@/components/editor/EditorCanvas";
 import type { ConnectionStatus } from "@/components/editor/ConnectionBadge";
 import type { Collaborator } from "@/components/editor/CollaboratorAvatars";
-import { getOrCreateUserSession } from "@/utils/userSession";
+import { getOrCreateUserSession, getUserColor } from "@/utils/userSession";
 import { AuthorHighlight } from "@/extensions/AuthorHighlight";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface SyncWriteEditorProps {
     docId: string;
@@ -28,14 +29,29 @@ export function SyncWriteEditor({
     userName: propUserName,
     userColor: propUserColor,
 }: SyncWriteEditorProps) {
+    const storeUser = useAuthStore((state) => state.user);
+    const checkAuth = useAuthStore((state) => state.checkAuth);
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
     const userSession = useMemo(() => {
+        if (storeUser?.userName) {
+            return {
+                id: storeUser.userId || "user",
+                name: propUserName || storeUser.userName,
+                color: propUserColor || getUserColor(storeUser.userName),
+            };
+        }
+
         const session = getOrCreateUserSession();
         return {
             id: session.id,
             name: propUserName || session.name,
             color: propUserColor || session.color,
         };
-    }, [propUserName, propUserColor]);
+    }, [storeUser, propUserName, propUserColor]);
 
     const provider = useHocuspocusProvider();
     const status = useHocuspocusConnectionStatus();
@@ -43,6 +59,17 @@ export function SyncWriteEditor({
     const users = useHocuspocusAwareness();
 
     const ydoc = provider ? provider.document : null;
+
+    useEffect(() => {
+        if (provider?.awareness) {
+            provider.awareness.setLocalStateField("user", {
+                name: userSession.name,
+                color: userSession.color,
+            });
+            provider.awareness.setLocalStateField("name", userSession.name);
+            provider.awareness.setLocalStateField("color", userSession.color);
+        }
+    }, [provider, userSession.name, userSession.color]);
 
     const editor = useEditor(
         {
@@ -89,21 +116,22 @@ export function SyncWriteEditor({
                 ? "connected"
                 : "offline";
 
-    const collaborators: Collaborator[] = users.length > 0
-        ? users.map((u) => ({
-            id: String(u.clientId),
-            name: (u.name as string) || "Anonymous",
-            color: (u.color as string) || "#6366f1",
-            isOnline: true,
-        }))
-        : [
-            {
-                id: userSession.id,
-                name: userSession.name,
-                color: userSession.color,
-                isOnline: status === "connected",
-            },
-        ];
+    const localClientId = provider.awareness?.clientID;
+
+    // Filter out local user so user only sees other real remote peers in collaborators
+    const collaborators: Collaborator[] = users
+        .filter((u) => u.clientId !== localClientId)
+        .map((u) => {
+            const rawUser = (u as any).user || {};
+            const name = rawUser.name || (u.name as string) || "Collaborator";
+            const color = rawUser.color || (u.color as string) || getUserColor(name);
+            return {
+                id: String(u.clientId),
+                name,
+                color,
+                isOnline: true,
+            };
+        });
 
     return (
         <div className="flex h-screen flex-col bg-white">
