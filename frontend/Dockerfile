@@ -36,8 +36,6 @@ RUN corepack enable
 
 COPY package.json pnpm-lock.yaml ./
 
-# 1. Faltu pnpm-workspace.yaml banane wali line hata di
-# 2. --frozen-lockfile hata diya taaki pnpm Alpine ke hisaab se missing esbuild binaries download kar sake
 RUN pnpm install
 
 COPY . .
