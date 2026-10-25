@@ -7,11 +7,12 @@ import {
     IconBrandGithub,
     IconBrandGoogle,
 } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSignIn } from "@/hooks/useSignIn";
 
 export default function SignInForm() {
-    const { signInUser } = useSignIn();
+    const navigate = useNavigate();
+    const { signInUser, isLoading, error } = useSignIn();
 
     const [data, setData] = useState({
         userName: "",
@@ -28,13 +29,26 @@ export default function SignInForm() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await signInUser(data.userName, data.password);
+        const success = await signInUser(data.userName, data.password);
+        if (success) {
+            navigate("/");
+        }
     };
 
     return (
         <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black">
             <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
+                Welcome back
             </h2>
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+                Sign in to your SyncWrite account
+            </p>
+
+            {error && (
+                <div className="mt-4 rounded-md bg-red-50 p-3 text-xs font-medium text-red-600 border border-red-200">
+                    {error}
+                </div>
+            )}
 
             <form className="my-8" onSubmit={handleSubmit}>
                 <LabelInputContainer className="mb-4">
@@ -71,18 +85,20 @@ export default function SignInForm() {
                 </div>
 
                 <button
-                    className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
+                    className="group/btn relative block h-10 w-full cursor-pointer rounded-md bg-gradient-to-br from-black to-neutral-700 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] transition-all duration-300 hover:brightness-110 hover:shadow-[0px_4px_20px_rgba(59,130,246,0.35)] active:scale-[0.99] disabled:opacity-50 dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_#27272a_inset,0px_-1px_0px_0px_#27272a_inset]"
                     type="submit"
+                    disabled={isLoading}
                 >
-                    Sign in &rarr;
+                    {isLoading ? "Signing in..." : "Sign in →"}
                     <BottomGradient />
                 </button>
 
                 <div className="mt-6 text-center">
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                         Don’t have an account?{" "}
-                        <Link to="/signup" className="text-blue-600 hover:underline hover:text-blue-700 font-medium">
-                            Sign up now
+                        <Link to="/signup" className="group/link relative inline-flex items-center text-blue-600 font-medium transition-colors hover:text-blue-700">
+                            <span>Sign up now</span>
+                            <span className="absolute inset-x-0 -bottom-0.5 block h-0.5 w-full bg-gradient-to-r from-cyan-500 to-indigo-500 opacity-0 transition-opacity duration-300 group-hover/link:opacity-100" />
                         </Link>
                     </p>
                 </div>
@@ -91,7 +107,7 @@ export default function SignInForm() {
 
                 <div className="flex flex-col space-y-4">
                     <button
-                        className="group/btn shadow-input relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_#262626]"
+                        className="group/btn shadow-input relative flex h-10 w-full cursor-pointer items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black transition-all duration-300 hover:bg-gray-100 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_#262626]"
                         type="button"
                     >
                         <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
@@ -101,7 +117,7 @@ export default function SignInForm() {
                         <BottomGradient />
                     </button>
                     <button
-                        className="group/btn shadow-input relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_#262626]"
+                        className="group/btn shadow-input relative flex h-10 w-full cursor-pointer items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black transition-all duration-300 hover:bg-gray-100 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_#262626]"
                         type="button"
                     >
                         <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
@@ -119,8 +135,9 @@ export default function SignInForm() {
 const BottomGradient = () => {
     return (
         <>
-            <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
-            <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
+            <span className="absolute inset-x-0 -bottom-px block h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
+            <span className="absolute inset-x-6 -bottom-px mx-auto block h-[3px] w-3/4 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-xs transition duration-500 group-hover/btn:opacity-100" />
+            <span className="absolute inset-x-12 -bottom-px mx-auto block h-[4px] w-1/2 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
         </>
     );
 };
