@@ -53,7 +53,8 @@
     "y-indexeddb": "^9.0.12",
     "y-protocols": "^1.0.7",
     "y-websocket": "^3.1.0",
-    "yjs": "^13.6.33"
+    "yjs": "^13.6.33",
+    "zustand": "^5.0.16"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
