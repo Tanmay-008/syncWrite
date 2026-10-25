@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, ChevronLeft } from "lucide-react";
+import { FileText, ChevronLeft, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -25,11 +25,17 @@ export function EditorHeader({
 }: EditorHeaderProps) {
   const navigate = useNavigate();
   const [title, setTitle] = useState("Untitled Document");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleEditClick = () => {
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  };
 
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="flex h-14 items-center justify-between px-4">
-        {/* Left: Back + Title */}
+        {/* Left: Back + Title + Edit Button */}
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -40,15 +46,26 @@ export function EditorHeader({
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-slate-400" />
+          <div className="group/title flex items-center gap-1.5 rounded-lg px-2 py-1 transition-colors hover:bg-slate-100/80">
+            <FileText className="h-4 w-4 text-slate-400 shrink-0" />
             <input
+              ref={inputRef}
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-60 border-none bg-transparent text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none"
+              className="w-48 sm:w-60 border-none bg-transparent text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-slate-300 focus:rounded px-1 -mx-1"
               placeholder="Untitled Document"
             />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleEditClick}
+              title="Edit document name"
+              className="h-6 w-6 shrink-0 cursor-pointer rounded-md p-1 text-slate-400 opacity-70 transition-all hover:bg-slate-200 hover:text-slate-700 hover:opacity-100 group-hover/title:opacity-100"
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
           </div>
         </div>
 
