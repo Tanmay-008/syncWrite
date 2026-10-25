@@ -26,6 +26,7 @@
     "@hocuspocus/provider-react": "^4.7.1",
     "@radix-ui/react-label": "^2.1.17",
     "@radix-ui/react-slot": "^1.3.3",
+    "@tabler/icons-react": "^3.49.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tiptap/core": "^3.32.0",
     "@tiptap/extension-collaboration": "^3.31.4",
