@@ -15,6 +15,7 @@
   "type": "commonjs",
   "dependencies": {
     "@hocuspocus/server": "^4.7.1",
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "crossws": "^0.4.15",
