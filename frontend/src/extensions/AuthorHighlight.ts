@@ -99,18 +99,18 @@ export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
     return {
       setAuthorHighlight:
         (attributes) =>
-        ({ commands }) => {
-          return commands.setMark(this.name, {
-            authorId: attributes.authorId,
-            authorName: attributes.authorName,
-            color: attributes.authorColor,
-          });
-        },
+          ({ commands }) => {
+            return commands.setMark(this.name, {
+              authorId: attributes.authorId,
+              authorName: attributes.authorName,
+              color: attributes.authorColor,
+            });
+          },
       unsetAuthorHighlight:
         () =>
-        ({ commands }) => {
-          return commands.unsetMark(this.name);
-        },
+          ({ commands }) => {
+            return commands.unsetMark(this.name);
+          },
     };
   },
 
@@ -122,7 +122,7 @@ export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
     return [
       new Plugin({
         key: pluginKey,
-        appendTransaction(transactions, oldState, newState) {
+        appendTransaction(transactions, newState) {
           // If no document changes happened, skip
           const docChanged = transactions.some((tr) => tr.docChanged);
           if (!docChanged) return null;
