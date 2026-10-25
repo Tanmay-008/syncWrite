@@ -14,6 +14,7 @@ interface EditorHeaderProps {
   docId: string;
   status?: ConnectionStatus;
   collaborators?: Collaborator[];
+  currentUser?: { name: string; color: string };
 }
 
 const mockCollaborators: Collaborator[] = [
@@ -26,6 +27,7 @@ export function EditorHeader({
   docId,
   status = "connected",
   collaborators = mockCollaborators,
+  currentUser,
 }: EditorHeaderProps) {
   const navigate = useNavigate();
   const [title, setTitle] = useState("Untitled Document");
@@ -56,8 +58,19 @@ export function EditorHeader({
           </div>
         </div>
 
-        {/* Right: Collaborators + Share + Status */}
+        {/* Right: Current User Pill + Collaborators + Share + Status */}
         <div className="flex items-center gap-3">
+          {currentUser && (
+            <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+              <span
+                className="h-2 w-2 rounded-full ring-2 ring-white"
+                style={{ backgroundColor: currentUser.color }}
+              />
+              <span className="font-medium text-slate-700 max-w-[120px] truncate">
+                {currentUser.name} (You)
+              </span>
+            </div>
+          )}
           <ConnectionBadge status={status} />
           <Separator orientation="vertical" className="h-6" />
           <CollaboratorAvatars collaborators={collaborators} />

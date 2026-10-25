@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Collaboration from "@tiptap/extension-collaboration";
@@ -13,6 +14,8 @@ import { EditorToolbar } from "@/components/editor/EditorToolbar";
 import { EditorCanvas } from "@/components/editor/EditorCanvas";
 import type { ConnectionStatus } from "@/components/editor/ConnectionBadge";
 import type { Collaborator } from "@/components/editor/CollaboratorAvatars";
+import { getOrCreateUserSession } from "@/utils/userSession";
+import { AuthorHighlight } from "@/extensions/AuthorHighlight";
 
 interface SyncWriteEditorProps {
     docId: string;
@@ -22,9 +25,18 @@ interface SyncWriteEditorProps {
 
 export function SyncWriteEditor({
     docId,
-    userName = "Tanmay",
-    userColor = "#6366f1",
+    userName: propUserName,
+    userColor: propUserColor,
 }: SyncWriteEditorProps) {
+    const userSession = useMemo(() => {
+        const session = getOrCreateUserSession();
+        return {
+            id: session.id,
+            name: propUserName || session.name,
+            color: propUserColor || session.color,
+        };
+    }, [propUserName, propUserColor]);
+
     const provider = useHocuspocusProvider();
     const status = useHocuspocusConnectionStatus();
     const syncStatus = useHocuspocusSyncStatus();
@@ -36,12 +48,17 @@ export function SyncWriteEditor({
         {
             extensions: [
                 StarterKit.configure({ undoRedo: false }),
+                AuthorHighlight.configure({
+                    authorId: userSession.id,
+                    authorName: userSession.name,
+                    authorColor: userSession.color,
+                }),
                 ...(ydoc ? [Collaboration.configure({ document: ydoc })] : []),
                 ...(provider
                     ? [
                         CollaborationCaret.configure({
                             provider,
-                            user: { name: userName, color: userColor },
+                            user: { name: userSession.name, color: userSession.color },
                         }),
                     ]
                     : []),
@@ -54,7 +71,7 @@ export function SyncWriteEditor({
                 },
             },
         },
-        [ydoc, provider]
+        [ydoc, provider, userSession.id, userSession.name, userSession.color]
     );
 
     if (!provider || !ydoc) {
@@ -81,9 +98,9 @@ export function SyncWriteEditor({
         }))
         : [
             {
-                id: "self",
-                name: userName,
-                color: userColor,
+                id: userSession.id,
+                name: userSession.name,
+                color: userSession.color,
                 isOnline: status === "connected",
             },
         ];
@@ -94,6 +111,7 @@ export function SyncWriteEditor({
                 docId={docId}
                 status={connectionStatus}
                 collaborators={collaborators}
+                currentUser={{ name: userSession.name, color: userSession.color }}
             />
             <EditorToolbar editor={editor} />
             <div className="flex-1 overflow-y-auto">

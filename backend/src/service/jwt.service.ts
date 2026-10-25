@@ -11,6 +11,7 @@ interface IdTokenPayload {
     userId: string;
     role: string;
     email: string;
+    userName?: string;
 }
 
 export function generateAccessToken(payload: AccessTokenPayload) {

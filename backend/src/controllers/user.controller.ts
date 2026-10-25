@@ -20,7 +20,8 @@ export const login = asyncHandler(async (req: any, res: any) => {
     const idToken = generateIdToken({
         userId: user._id.toString(),
         role: user.role || "user",
-        email: user.email
+        email: user.email,
+        userName: user.userName,
     });
 
     const userResponse: UserResponse = {
@@ -54,7 +55,8 @@ export const register = asyncHandler(async (req: any, res: any) => {
     const idToken = generateIdToken({
         userId: user._id.toString(),
         role: user.role || "user",
-        email: user.email
+        email: user.email,
+        userName: user.userName,
     });
 
     const userResponse: UserResponse = {
