@@ -39,20 +39,21 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
 COPY . .
+
+ENV ENVIRONMENT=production
+ENV NODE_ENV=production
+
 RUN pnpm run build:prod
 
-FROM node:22-alpine
 
-WORKDIR /app
+FROM nginx:alpine
 
-RUN npm install -g serve
+ENV ENVIRONMENT=production
+ENV PORT=3000
 
-COPY --from=build /app/dist ./dist
-
-USER node
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
 
-CMD ["serve", "-s", "dist", "-l", "3000"]
-
-
+CMD ["nginx", "-g", "daemon off;"]
