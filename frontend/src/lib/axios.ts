@@ -1,7 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
 const getBaseUrl = () => {
-    if (import.meta.env.ENVIRONMENT === "production") {
+    if (import.meta.env.PROD) {
         return "https://api-syncwrite.tanmayshirbhayye.tech/api/v1";
     }
     return "http://localhost:4000/api/v1";
