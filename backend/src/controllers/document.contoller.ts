@@ -11,5 +11,6 @@ export const createDocument = async (req: Request, res: Response, next: NextFunc
         );
     } catch (error) {
         next(error);
+        return error
     }
 }
