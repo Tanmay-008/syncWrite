@@ -37,3 +37,4 @@ export const userRegister = async (data: user) => {
     });
     return user;
 }
+
