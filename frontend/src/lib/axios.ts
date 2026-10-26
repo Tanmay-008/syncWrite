@@ -2,8 +2,10 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
 const getBaseUrl = () => {
     if (import.meta.env.PROD) {
+        console.log("Production");
         return "https://api-syncwrite.tanmayshirbhayye.tech/api/v1";
     }
+    console.log("Development");
     return "http://localhost:4000/api/v1";
 };
 
