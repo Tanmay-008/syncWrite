@@ -55,8 +55,8 @@ export function verifyAccessToken(token: string) {
     }
 
     try {
-        const decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
-        return decoded;
+        const decodedToken = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        return decodedToken;
     } catch (error: any) {
         if (error.name === 'TokenExpiredError') {
             logger.error("Error: Access Token expired");
