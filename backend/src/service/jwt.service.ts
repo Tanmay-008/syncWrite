@@ -5,17 +5,19 @@ import { ApiError } from "../utils/ApiError";
 interface AccessTokenPayload {
     userId: string;
     role: string;
-}
-
-interface IdTokenPayload {
-    userId: string;
-    role: string;
     email: string;
     userName?: string;
 }
 
+// interface IdTokenPayload {
+//     userId: string;
+//     role: string;
+//     email: string;
+//     userName?: string;
+// }
+
 export function generateAccessToken(payload: AccessTokenPayload) {
-    const secretKey = process.env.ACCESS_TOKEN_SECRET || process.env.SECRET_KEY;
+    const secretKey = process.env.SECRET_KEY;
 
     if (!secretKey) {
         logger.error("FATAL: Access token secret key not found in environment variables");

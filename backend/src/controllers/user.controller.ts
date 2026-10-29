@@ -14,7 +14,9 @@ export const login = asyncHandler(async (req: any, res: any) => {
 
     const accessToken = generateAccessToken({
         userId: user._id.toString(),
-        role: user.role || "user"
+        role: user.role || "user",
+        email: user.email,
+        userName: user.userName,
     });
 
     // const idToken = generateIdToken({
@@ -48,7 +50,9 @@ export const register = asyncHandler(async (req: any, res: any) => {
 
     const accessToken = generateAccessToken({
         userId: user._id.toString(),
-        role: user.role || "user"
+        role: user.role || "user",
+        email: user.email,
+        userName: user.userName,
     });
 
     // const idToken = generateIdToken({
