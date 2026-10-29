@@ -13,17 +13,11 @@ export const useSignIn = () => {
         try {
             const response = await axiosAPI.post('/user/signin', { userName, password });
             const resData = response.data?.data || response.data;
-            const idToken = resData?.idToken;
             const user = resData?.user;
 
-            if (idToken) {
-                localStorage.setItem("idToken", idToken);
-            }
             if (user) {
-                localStorage.setItem("user", JSON.stringify(user));
+                useAuthStore.getState().login(user);
             }
-
-            useAuthStore.getState().checkAuth();
 
             return true;
         } catch (err: any) {
