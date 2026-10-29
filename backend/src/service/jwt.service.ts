@@ -57,7 +57,7 @@ export function verifyAccessToken(token: string) {
     }
 
     try {
-        const decodedToken = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        const decodedToken = jwt.verify(token, secretKey, { algorithms: ['HS256'] }) as AccessTokenPayload;
         return decodedToken;
     } catch (error: any) {
         if (error.name === 'TokenExpiredError') {
