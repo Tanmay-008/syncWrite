@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { UserResponse } from "../types/type";
 import { userLogin, userRegister } from "../service/user.service";
-import { generateAccessToken, generateIdToken } from "../service/jwt.service";
+import { generateAccessToken } from "../service/jwt.service";
 
 export const login = asyncHandler(async (req: any, res: any) => {
     const { userName, password } = req.body;
@@ -17,12 +17,12 @@ export const login = asyncHandler(async (req: any, res: any) => {
         role: user.role || "user"
     });
 
-    const idToken = generateIdToken({
-        userId: user._id.toString(),
-        role: user.role || "user",
-        email: user.email,
-        userName: user.userName,
-    });
+    // const idToken = generateIdToken({
+    //     userId: user._id.toString(),
+    //     role: user.role || "user",
+    //     email: user.email,
+    //     userName: user.userName,
+    // });
 
     const userResponse: UserResponse = {
         id: user._id.toString(),
@@ -38,9 +38,8 @@ export const login = asyncHandler(async (req: any, res: any) => {
 
     res.status(200)
         .cookie("accessToken", accessToken, options)
-        .cookie("idToken", idToken, options)
         .json(
-            new ApiResponse(200, { user: userResponse, idToken }, "user login successfully")
+            new ApiResponse(200, { user: userResponse }, "user login successfully")
         );
 });
 
@@ -52,12 +51,12 @@ export const register = asyncHandler(async (req: any, res: any) => {
         role: user.role || "user"
     });
 
-    const idToken = generateIdToken({
-        userId: user._id.toString(),
-        role: user.role || "user",
-        email: user.email,
-        userName: user.userName,
-    });
+    // const idToken = generateIdToken({
+    //     userId: user._id.toString(),
+    //     role: user.role || "user",
+    //     email: user.email,
+    //     userName: user.userName,
+    // });
 
     const userResponse: UserResponse = {
         id: user._id.toString(),
@@ -73,8 +72,7 @@ export const register = asyncHandler(async (req: any, res: any) => {
 
     res.status(201)
         .cookie("accessToken", accessToken, options)
-        .cookie("idToken", idToken, options)
         .json(
-            new ApiResponse(201, { user: userResponse, idToken }, "user is created successfully")
+            new ApiResponse(201, { user: userResponse }, "user is created successfully")
         );
 });

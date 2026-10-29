@@ -30,21 +30,21 @@ export function generateAccessToken(payload: AccessTokenPayload) {
     return token;
 }
 
-export function generateIdToken(payload: IdTokenPayload) {
-    const secretKey = process.env.ID_TOKEN_SECRET || process.env.SECRET_KEY;
+// export function generateIdToken(payload: IdTokenPayload) {
+//     const secretKey = process.env.ID_TOKEN_SECRET || process.env.SECRET_KEY;
 
-    if (!secretKey) {
-        logger.error("FATAL: ID token secret key not found in environment variables");
-        throw new ApiError(500, "Internal Server Configuration Error");
-    }
+//     if (!secretKey) {
+//         logger.error("FATAL: ID token secret key not found in environment variables");
+//         throw new ApiError(500, "Internal Server Configuration Error");
+//     }
 
-    const token = jwt.sign(payload, secretKey, {
-        algorithm: 'HS256',
-        expiresIn: '1h'
-    });
+//     const token = jwt.sign(payload, secretKey, {
+//         algorithm: 'HS256',
+//         expiresIn: '1h'
+//     });
 
-    return token;
-}
+//     return token;
+// }
 
 export function verifyAccessToken(token: string) {
     const secretKey = process.env.ACCESS_TOKEN_SECRET || process.env.SECRET_KEY;
