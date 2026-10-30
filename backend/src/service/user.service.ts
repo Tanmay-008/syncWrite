@@ -40,8 +40,7 @@ export const userRegister = async (data: user) => {
     return user;
 }
 
-export const getMe = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.userId;
+export const getMe = asyncHandler(async (userId: string) => {
 
     const user = await UserModel.findById(userId).select("-password");
     if (!user) {
