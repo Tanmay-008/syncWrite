@@ -15,7 +15,7 @@ import { EditorToolbar } from "@/components/editor/EditorToolbar";
 import { EditorCanvas } from "@/components/editor/EditorCanvas";
 import type { ConnectionStatus } from "@/components/editor/ConnectionBadge";
 import type { Collaborator } from "@/components/editor/CollaboratorAvatars";
-import { getOrCreateUserSession, getUserColor } from "@/utils/userSession";
+import { getUserColor } from "@/utils/userSession";
 import { AuthorHighlight } from "@/extensions/AuthorHighlight";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -42,19 +42,11 @@ export function SyncWriteEditor({
     }, [isAuthenticated, storeUser, navigate, location]);
 
     const userSession = useMemo(() => {
-        if (storeUser?.userName) {
-            return {
-                id: storeUser.userId || "user",
-                name: propUserName || storeUser.userName,
-                color: propUserColor || getUserColor(storeUser.userName),
-            };
-        }
-
-        const session = getOrCreateUserSession();
+        const userName = propUserName || storeUser?.userName || "User";
         return {
-            id: session.id,
-            name: propUserName || session.name,
-            color: propUserColor || session.color,
+            id: storeUser?.userId || storeUser?.id || "user",
+            name: userName,
+            color: propUserColor || getUserColor(userName),
         };
     }, [storeUser, propUserName, propUserColor]);
 
