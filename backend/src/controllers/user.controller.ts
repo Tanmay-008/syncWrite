@@ -2,7 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { UserResponse } from "../types/type";
-import { userLogin, userRegister } from "../service/user.service";
+import { getMe, userLogin, userRegister } from "../service/user.service";
 import { generateAccessToken } from "../service/jwt.service";
 
 export const login = asyncHandler(async (req: any, res: any) => {
@@ -80,3 +80,15 @@ export const register = asyncHandler(async (req: any, res: any) => {
             new ApiResponse(201, { user: userResponse }, "user is created successfully")
         );
 });
+
+export const userAuthCheck = asyncHandler(async (req: any, res: any) => {
+    const userID = req.user?.userId;
+    if (!userID) {
+        throw new ApiError(401, "unauthorized user");
+    }
+    const user = await getMe(userID);
+
+    return res.status(200).json(
+        new ApiResponse(200, { user: user }, "user is authenticated successfully")
+    );
+})
