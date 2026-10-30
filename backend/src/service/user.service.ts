@@ -40,7 +40,7 @@ export const userRegister = async (data: user) => {
     return user;
 }
 
-export const getMe = asyncHandler(async (userId: string) => {
+export const getMe = async (userId: string) => {
 
     const user = await UserModel.findById(userId).select("-password");
     if (!user) {
@@ -49,4 +49,4 @@ export const getMe = asyncHandler(async (userId: string) => {
 
 
     return user
-});
+};
