@@ -34,11 +34,6 @@ export function SyncWriteEditor({
     const location = useLocation();
     const storeUser = useAuthStore((state) => state.user);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-    const checkAuth = useAuthStore((state) => state.checkAuth);
-
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
 
     useEffect(() => {
         if (!isAuthenticated || !storeUser) {

@@ -3,29 +3,37 @@ import { HocuspocusRoom } from "@hocuspocus/provider-react";
 import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { SyncWriteEditor } from "@/components/editor/SyncWriteEditor";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCheckAuth } from "@/hooks/useCheckAuth";
 
 export function DocumentPage() {
   const { docId } = useParams<{ docId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, checkAuth } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
+  const { checkAuth, isLoading } = useCheckAuth(false);
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    const verifyAuth = async () => {
+      if (useAuthStore.getState().isAuthenticated) {
+        return;
+      }
 
-  useEffect(() => {
-    if (!isAuthenticated || !user) {
-      navigate("/signin", { replace: true, state: { from: location } });
-    }
-  }, [isAuthenticated, user, navigate, location]);
+      await checkAuth();
+
+      if (!useAuthStore.getState().isAuthenticated) {
+        navigate("/signin", { replace: true, state: { from: location } });
+      }
+    };
+
+    verifyAuth();
+  }, [checkAuth, navigate, location]);
 
   if (!docId || docId === "undefined") {
     return <Navigate to="/" replace />;
   }
 
-  // Prevent rendering room and editor for unauthenticated users
-  if (!isAuthenticated || !user) {
+  // Prevent rendering room and editor while verifying or if not authenticated
+  if (isLoading || !isAuthenticated || !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-white text-sm text-slate-400">
         Authenticating...
