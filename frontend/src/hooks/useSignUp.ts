@@ -16,7 +16,8 @@ export const useSignUp = () => {
             const user = resData?.user;
 
             if (user) {
-                useAuthStore.getState().login(user);
+                useAuthStore.getState().setUser(user);
+                useAuthStore.getState().setIsAuthenticated(true);
             }
 
             return true;
