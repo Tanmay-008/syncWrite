@@ -2,8 +2,6 @@ import { ApiError } from "../utils/ApiError";
 import { user } from "../types/type";
 import { compareData, encryptData } from "../utils/security";
 import { UserModel } from "../model/user.model";
-import { asyncHandler } from "../utils/asyncHandler";
-import { AuthRequest } from "../middleware/auth.middleware";
 
 type UserLoginData = {
     userName: string,
