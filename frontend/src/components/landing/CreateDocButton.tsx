@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createDocument } from "@/api/documentApi";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +21,13 @@ export function CreateDocButton() {
   const [docName, setDocName] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
 
   const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen && !isAuthenticated) {
+      navigate("/signin");
+      return;
+    }
     setOpen(newOpen);
     if (!newOpen) {
       setErrorMessage(null);
@@ -30,6 +36,11 @@ export function CreateDocButton() {
   };
 
   const handleCreate = async () => {
+    if (!isAuthenticated) {
+      navigate("/signin");
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -58,12 +69,21 @@ export function CreateDocButton() {
     }
   };
 
+  const handleTriggerClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      e.stopPropagation();
+      navigate("/signin");
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
             size="lg"
+            onClick={handleTriggerClick}
             className="h-12 cursor-pointer gap-2 rounded-xl px-6 text-base font-medium shadow-lg shadow-slate-900/10 transition-all duration-200 hover:shadow-xl hover:shadow-slate-900/15"
           />
         }
@@ -71,6 +91,7 @@ export function CreateDocButton() {
         <Plus className="h-5 w-5" />
         Create New Document
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New Document</DialogTitle>

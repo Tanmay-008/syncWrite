@@ -2,15 +2,20 @@ import { Link } from "react-router-dom";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect } from "react";
+import { useCheckAuth } from "@/hooks/useCheckAuth";
 
 export function LandingPage() {
-  const { user, isAuthenticated, checkAuth } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { checkAuth } = useCheckAuth(false);
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    if (!user?.userId && !user?.id) {
+      checkAuth();
+    }
+  }, [user, checkAuth]);
 
   const userInitial = (user?.userName || user?.email || "U").charAt(0).toUpperCase();
+
 
   return (
     <div className="min-h-screen bg-slate-50">
