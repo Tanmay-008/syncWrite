@@ -36,6 +36,9 @@ export const login = asyncHandler(async (req: any, res: any) => {
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" as const : "lax" as const,
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days — match JWT expiry
     };
 
     res.status(200)
@@ -72,6 +75,9 @@ export const register = asyncHandler(async (req: any, res: any) => {
     const options = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" as const : "lax" as const,
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     };
 
     res.status(201)
