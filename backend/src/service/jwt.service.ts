@@ -26,7 +26,7 @@ export function generateAccessToken(payload: AccessTokenPayload) {
 
     const token = jwt.sign(payload, secretKey, {
         algorithm: 'HS256',
-        expiresIn: '15m'
+        expiresIn: '7d'
     });
 
     return token;
