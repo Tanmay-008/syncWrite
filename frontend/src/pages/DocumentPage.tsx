@@ -1,9 +1,14 @@
 import { useEffect } from "react";
-import { HocuspocusRoom } from "@hocuspocus/provider-react";
+import {
+  HocuspocusProviderWebsocketComponent,
+  HocuspocusRoom,
+} from "@hocuspocus/provider-react";
 import { useParams, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { SyncWriteEditor } from "@/components/editor/SyncWriteEditor";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCheckAuth } from "@/hooks/useCheckAuth";
+
+const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:4000";
 
 export function DocumentPage() {
   const { docId } = useParams<{ docId: string }>();
@@ -41,15 +46,18 @@ export function DocumentPage() {
     );
   }
 
+  // WebSocket connection sirf tab banti hai jab user authenticated ho
   return (
-    <HocuspocusRoom
-      name={docId}
-      flushDelay={100}
-      onAuthenticationFailed={({ reason }) => {
-        console.warn("Auth failed for room:", docId, reason);
-      }}
-    >
-      <SyncWriteEditor docId={docId} />
-    </HocuspocusRoom>
+    <HocuspocusProviderWebsocketComponent url={WS_URL}>
+      <HocuspocusRoom
+        name={docId}
+        flushDelay={100}
+        onAuthenticationFailed={({ reason }) => {
+          console.warn("Auth failed for room:", docId, reason);
+        }}
+      >
+        <SyncWriteEditor docId={docId} />
+      </HocuspocusRoom>
+    </HocuspocusProviderWebsocketComponent>
   );
 }
