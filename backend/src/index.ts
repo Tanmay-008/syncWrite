@@ -7,7 +7,7 @@ import { app } from "./app";
 import { getChildLogger } from "./utils/logger";
 import { connectToDb } from "./db/document.db";
 import { verifyAccessToken } from "./service/jwt.service";
-import jwt from "jsonwebtoken";
+import { Logger } from "@hocuspocus/extension-logger";
 
 connectToDb();
 
@@ -19,6 +19,14 @@ const HOST = "0.0.0.0";
 const parseCookies = cookieParser();
 
 const hocuspocus = new Hocuspocus({
+    extensions: [
+        new Logger({
+            onChange: false, // Har keystroke par log spam rokne ke liye
+            log: (message) => {
+                logger.info(message);
+            },
+        }),
+    ],
     async onAuthenticate(data) {
         if (!data.context?.user_id) {
             throw new Error("User unauthorized");
@@ -28,17 +36,11 @@ const hocuspocus = new Hocuspocus({
             user_id: data.context.user_id,
         };
     },
-    async onConnect(data) {
-        logger.info(`Client connected to document room: ${data.documentName}`);
-    },
     async onLoadDocument(data) {
         logger.info(`Loading document state from DB for: ${data.documentName}`);
     },
     async onStoreDocument(data) {
         logger.info(`Saving state for room: ${data.documentName} by User: ${data.lastContext?.user_id}`);
-    },
-    async onDisconnect(data) {
-        logger.info(`Client disconnected from room: ${data.documentName}`);
     },
 });
 
@@ -60,14 +62,34 @@ server.on("upgrade", (request: any, socket, head) => {
                 return;
             }
 
-            verifyAccessToken(token)
-
-            const verifiedUser = jwt.decode(token) as { userId: string };
+            const verifiedUser = verifyAccessToken(token) as { userId: string };
 
             logger.info(`WebSocket Upgrade Accepted for user: ${verifiedUser?.userId}`);
+
             wss.handleUpgrade(request, socket, head, (ws) => {
-                hocuspocus.handleConnection(ws, request, {
+                const protocol = request.headers["x-forwarded-proto"] || "http";
+                const host = request.headers.host || `${HOST}:${PORT}`;
+                const webRequest = new Request(`${protocol}://${host}${request.url}`, {
+                    headers: request.headers as Record<string, string>,
+                });
+
+                const clientConnection = hocuspocus.handleConnection(ws, webRequest, {
                     user_id: verifiedUser.userId,
+                });
+
+                ws.on("message", (data: Buffer) => {
+                    clientConnection.handleMessage(new Uint8Array(data));
+                });
+
+                ws.on("close", (code, reason) => {
+                    clientConnection.handleClose({
+                        code,
+                        reason: reason.toString(),
+                    });
+                });
+
+                ws.on("error", (error) => {
+                    logger.error(`WebSocket error: ${error.message}`);
                 });
             });
 
