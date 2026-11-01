@@ -21,7 +21,7 @@ const parseCookies = cookieParser();
 const hocuspocus = new Hocuspocus({
     extensions: [
         new Logger({
-            onChange: false, // Har keystroke par log spam rokne ke liye
+            onChange: false,
             log: (message) => {
                 logger.info(message);
             },
