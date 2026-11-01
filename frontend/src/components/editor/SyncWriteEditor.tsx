@@ -44,7 +44,7 @@ export function SyncWriteEditor({
     const userSession = useMemo(() => {
         const userName = propUserName || storeUser?.userName || "User";
         return {
-            id: storeUser?.userId || storeUser?.id || "user",
+            id: (storeUser as any)?.userId || storeUser?.id || "user",
             name: userName,
             color: propUserColor || getUserColor(userName),
         };
@@ -52,7 +52,7 @@ export function SyncWriteEditor({
 
     const provider = useHocuspocusProvider();
     const status = useHocuspocusConnectionStatus();
-    const syncStatus = useHocuspocusSyncStatus();
+    const isSynced = useHocuspocusSyncStatus();
     const users = useHocuspocusAwareness();
 
     const ydoc = provider ? provider.document : null;
@@ -60,13 +60,12 @@ export function SyncWriteEditor({
     useEffect(() => {
         if (provider?.awareness) {
             provider.awareness.setLocalStateField("user", {
+                id: userSession.id,
                 name: userSession.name,
                 color: userSession.color,
             });
-            provider.awareness.setLocalStateField("name", userSession.name);
-            provider.awareness.setLocalStateField("color", userSession.color);
         }
-    }, [provider, userSession.name, userSession.color]);
+    }, [provider, userSession.id, userSession.name, userSession.color]);
 
     const editor = useEditor(
         {
@@ -95,7 +94,7 @@ export function SyncWriteEditor({
                 },
             },
         },
-        [ydoc, provider, userSession.id, userSession.name, userSession.color]
+        [ydoc, provider]
     );
 
     if (!provider || !ydoc) {
@@ -107,21 +106,20 @@ export function SyncWriteEditor({
     }
 
     const connectionStatus: ConnectionStatus =
-        syncStatus === "syncing"
-            ? "syncing"
-            : status === "connected"
-                ? "connected"
-                : "offline";
+        status === "disconnected"
+            ? "offline"
+            : status === "connecting" || !isSynced
+                ? "syncing"
+                : "connected";
 
     const localClientId = provider.awareness?.clientID;
 
-    // Filter out local user so user only sees other real remote peers in collaborators
     const collaborators: Collaborator[] = users
         .filter((u) => u.clientId !== localClientId)
         .map((u) => {
             const rawUser = (u as any).user || {};
-            const name = rawUser.name || (u.name as string) || "Collaborator";
-            const color = rawUser.color || (u.color as string) || getUserColor(name);
+            const name = rawUser.name || (u as any).name || "Collaborator";
+            const color = rawUser.color || (u as any).color || getUserColor(name);
             return {
                 id: String(u.clientId),
                 name,
