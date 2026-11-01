@@ -8,13 +8,11 @@ import { SyncWriteEditor } from "@/components/editor/SyncWriteEditor";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCheckAuth } from "@/hooks/useCheckAuth";
 
-const getBaseUrl = () => {
+const getWsUrl = () => {
   if (import.meta.env.PROD) {
-    console.log("Production");
-    return "https://api-syncwrite.tanmayshirbhayye.tech/api/v1";
+    return "wss://api-syncwrite.tanmayshirbhayye.tech";
   }
-  console.log("Development");
-  return "http://localhost:4000/api/v1";
+  return "ws://localhost:4000";
 };
 
 export function DocumentPage() {
@@ -53,7 +51,7 @@ export function DocumentPage() {
   }
 
   return (
-    <HocuspocusProviderWebsocketComponent url={getBaseUrl()}>
+    <HocuspocusProviderWebsocketComponent url={getWsUrl()}>
       <HocuspocusRoom
         name={docId}
         flushDelay={100}
