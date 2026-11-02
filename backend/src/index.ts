@@ -8,6 +8,8 @@ import { getChildLogger } from "./utils/logger";
 import { connectToDb } from "./db/document.db";
 import { verifyAccessToken } from "./service/jwt.service";
 import { Logger } from "@hocuspocus/extension-logger";
+import { Database } from "@hocuspocus/extension-database";
+import { Document } from "./model/document.model";
 
 connectToDb();
 
@@ -26,7 +28,35 @@ const hocuspocus = new Hocuspocus({
                 logger.info(message);
             },
         }),
+        new Database({
+            fetch: async ({ documentName: docId }) => {
+                logger.info(`Fetching document state from DB for: ${docId}`);
+
+                const doc = await Document.findById(docId);
+
+                if (doc?.crdtState) {
+                    logger.info(`Found existing state for: ${docId}`);
+                    return new Uint8Array(doc.crdtState);
+                }
+
+                logger.info(`No existing state found for: ${docId}`);
+                return null;
+            },
+            store: async ({ documentName: docId, state, lastContext }) => {
+                logger.info(`Saving state for room: ${docId} by User: ${lastContext?.user_id}`);
+
+                await Document.findByIdAndUpdate(
+                    docId,
+                    { crdtState: Buffer.from(state) },
+                    { upsert: false }
+                );
+
+                logger.info(`State saved successfully for: ${docId}`);
+            },
+        }),
     ],
+    debounce: 15000,
+
     async onAuthenticate(data) {
         if (!data.context?.user_id) {
             throw new Error("User unauthorized");
@@ -35,12 +65,6 @@ const hocuspocus = new Hocuspocus({
         return {
             user_id: data.context.user_id,
         };
-    },
-    async onLoadDocument(data) {
-        logger.info(`Loading document state from DB for: ${data.documentName}`);
-    },
-    async onStoreDocument(data) {
-        logger.info(`Saving state for room: ${data.documentName} by User: ${data.lastContext?.user_id}`);
     },
 });
 

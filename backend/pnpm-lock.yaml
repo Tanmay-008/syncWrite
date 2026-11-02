@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hocuspocus/extension-database':
+        specifier: ^4.8.0
+        version: 4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
       '@hocuspocus/extension-logger':
         specifier: ^4.8.0
         version: 4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
@@ -409,6 +412,11 @@ packages:
 
   '@hocuspocus/common@4.8.0':
     resolution: {integrity: sha512-UI8Vye3mds2aMUHaWfwkDq0+257JUpvKa0nyAOjXWLfyhYHsAq8eku+ynZc/PaShyOci/VD54cW/rLQJGHHPKg==}
+
+  '@hocuspocus/extension-database@4.8.0':
+    resolution: {integrity: sha512-QHvS84BpPMqKtBxGkfzwODiP3n7nAru4smrgv3nyYfQT0682VtAb3YS/wp12FwuFnyt9WEdQ7584s/bD0Lz69g==}
+    peerDependencies:
+      yjs: ^13.6.8
 
   '@hocuspocus/extension-logger@4.8.0':
     resolution: {integrity: sha512-3gg2nkpnnKOo2hOZ48m8kCc/5fIQgmo3yUmUnFPsllGy1byTc88OGUX50sabA7NF1fyG5fVkC+PshZwA/PkBjw==}
@@ -1678,6 +1686,14 @@ snapshots:
   '@hocuspocus/common@4.8.0':
     dependencies:
       lib0: 0.2.119
+
+  '@hocuspocus/extension-database@4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)':
+    dependencies:
+      '@hocuspocus/server': 4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
+      yjs: 13.6.33
+    transitivePeerDependencies:
+      - srvx
+      - y-protocols
 
   '@hocuspocus/extension-logger@4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)':
     dependencies:
