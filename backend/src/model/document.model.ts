@@ -6,7 +6,15 @@ const documentSchema = new mongoose.Schema(
             type: String,
             default: "Untitled Document",
             trim: true,
-        }, crdtState: {
+        },
+        authorId: {
+            type: String,
+            required: true,
+        },
+        collaborators: [{
+            type: String
+        }],
+        crdtState: {
             type: Buffer,
             default: null,
         },
