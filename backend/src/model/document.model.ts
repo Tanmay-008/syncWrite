@@ -11,6 +11,16 @@ const documentSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        pendingRequests: [
+            {
+                type: String,
+            },
+        ],
+        rejectedRequests: [
+            {
+                type: String,
+            },
+        ],
         collaborators: [{
             type: String
         }],

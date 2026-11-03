@@ -10,6 +10,7 @@ import { verifyAccessToken } from "./service/jwt.service";
 import { Logger } from "@hocuspocus/extension-logger";
 import { Database } from "@hocuspocus/extension-database";
 import { Document } from "./model/document.model";
+import { ApiError } from "./utils/ApiError";
 
 connectToDb();
 
@@ -58,12 +59,36 @@ const hocuspocus = new Hocuspocus({
     debounce: 15000,
 
     async onAuthenticate(data) {
-        if (!data.context?.user_id) {
-            throw new Error("User unauthorized");
+        const userId = data.context?.user_id;
+        if (!userId) {
+            throw new ApiError(401, "UNAUTHORIZED:User unauthorized in document room")
+        }
+
+        const docId = data.documentName;
+        let doc = null;
+        try {
+            doc = await Document.findById(docId);
+        } catch (err: any) {
+            logger.error(`Error querying document ${docId}: ${err?.message}`);
+
+        }
+
+        if (!doc) {
+            logger.warn(`Document ${docId} not found in DB for user ${userId}`);
+            throw new ApiError(404, "NOT_FOUND:Document not found")
+        }
+
+        const isAuthor = doc.authorId?.toString() === userId?.toString();
+        const isCollaborator = doc.collaborators?.some((c: any) => c?.toString() === userId?.toString()) ?? false;
+
+        if (!isAuthor && !isCollaborator) {
+            logger.warn(`User ${userId} denied access to document: ${docId}`);
+            throw new ApiError(403, "ACCESS_DENIED:Request permission from the author")
         }
 
         return {
-            user_id: data.context.user_id,
+            user_id: userId,
+            isAuthor,
         };
     },
 });

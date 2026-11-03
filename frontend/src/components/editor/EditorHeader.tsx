@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, ChevronLeft, Pencil } from "lucide-react";
+import { FileText, ChevronLeft, Pencil, Check, X, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -9,6 +9,12 @@ import {
 } from "./CollaboratorAvatars";
 import { ShareModal } from "./ShareModal";
 import { ConnectionBadge, type ConnectionStatus } from "./ConnectionBadge";
+import {
+  getDocumentAccessInfo,
+  approveDocumentAccess,
+  rejectDocumentAccess,
+  type PendingUser,
+} from "@/api/documentApi";
 
 interface EditorHeaderProps {
   docId: string;
@@ -27,14 +33,105 @@ export function EditorHeader({
   const [title, setTitle] = useState("Untitled Document");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [isAuthor, setIsAuthor] = useState(false);
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const loadAccessInfo = useCallback(async () => {
+    try {
+      const info = await getDocumentAccessInfo(docId);
+      setIsAuthor(info.isAuthor);
+      setPendingUsers(info.pendingUsers || []);
+      if (info.documentName) {
+        setTitle(info.documentName);
+      }
+    } catch (err) {
+      // background poll error silent
+    }
+  }, [docId]);
+
+  // Initial fetch and polling every 4s for real-time access request alerts
+  useEffect(() => {
+    loadAccessInfo();
+    const interval = setInterval(loadAccessInfo, 4000);
+    return () => clearInterval(interval);
+  }, [loadAccessInfo]);
+
+  const handleApprove = async (targetUserId: string) => {
+    setActionLoading(`approve-${targetUserId}`);
+    try {
+      await approveDocumentAccess(docId, targetUserId);
+      setPendingUsers((prev) => prev.filter((u) => u.userId !== targetUserId));
+    } catch (err) {
+      console.error("Failed to approve access", err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async (targetUserId: string) => {
+    setActionLoading(`reject-${targetUserId}`);
+    try {
+      await rejectDocumentAccess(docId, targetUserId);
+      setPendingUsers((prev) => prev.filter((u) => u.userId !== targetUserId));
+    } catch (err) {
+      console.error("Failed to reject access", err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleEditClick = () => {
     inputRef.current?.focus();
     inputRef.current?.select();
   };
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="flex h-14 items-center justify-between px-4">
+    <div className="flex flex-col border-b border-slate-200 bg-white">
+      {/* Real-time Author Notification Banner for Access Requests */}
+      {isAuthor && pendingUsers.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-200 bg-amber-50/90 px-4 py-2 text-xs text-amber-900 animate-in slide-in-from-top-1">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500"></span>
+            </span>
+            <Bell className="h-3.5 w-3.5 text-amber-600" />
+            <span>
+              <strong>{pendingUsers[0].userName}</strong> ({pendingUsers[0].email}) wants access to this document.
+              {pendingUsers.length > 1 && (
+                <span className="ml-1 font-semibold text-amber-700">
+                  (+{pendingUsers.length - 1} more)
+                </span>
+              )}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              disabled={actionLoading === `approve-${pendingUsers[0].userId}`}
+              onClick={() => handleApprove(pendingUsers[0].userId)}
+              className="h-7 cursor-pointer gap-1 rounded-md bg-emerald-600 px-3 text-xs text-white shadow-xs hover:bg-emerald-700"
+            >
+              <Check className="h-3.5 w-3.5" />
+              Approve
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={actionLoading === `reject-${pendingUsers[0].userId}`}
+              onClick={() => handleReject(pendingUsers[0].userId)}
+              className="h-7 cursor-pointer gap-1 rounded-md border-amber-200 bg-white px-2.5 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+            >
+              <X className="h-3.5 w-3.5" />
+              Deny
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <header className="flex h-14 items-center justify-between px-4">
         {/* Left: Back + Title + Edit Button */}
         <div className="flex items-center gap-2">
           <Button
@@ -89,7 +186,7 @@ export function EditorHeader({
           <CollaboratorAvatars collaborators={collaborators} />
           <ShareModal docId={docId} />
         </div>
-      </div>
-    </header>
+      </header>
+    </div>
   );
 }
