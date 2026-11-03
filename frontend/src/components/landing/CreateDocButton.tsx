@@ -21,10 +21,11 @@ export function CreateDocButton() {
   const [docName, setDocName] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen && !isAuthenticated) {
+    const userId = user?.userId || user?.id;
+    if (newOpen && (!isAuthenticated || !userId)) {
       navigate("/signin");
       return;
     }
@@ -36,7 +37,8 @@ export function CreateDocButton() {
   };
 
   const handleCreate = async () => {
-    if (!isAuthenticated) {
+    const userId = user?.userId || user?.id;
+    if (!isAuthenticated || !userId) {
       navigate("/signin");
       return;
     }
@@ -45,7 +47,7 @@ export function CreateDocButton() {
     setErrorMessage(null);
 
     try {
-      const response = await createDocument(docName.trim());
+      const response = await createDocument(docName.trim(), userId);
       const newDoc = response?.data;
       const docId = newDoc?._id || newDoc?.id;
 
@@ -70,7 +72,8 @@ export function CreateDocButton() {
   };
 
   const handleTriggerClick = (e: React.MouseEvent) => {
-    if (!isAuthenticated) {
+    const userId = user?.userId || user?.id;
+    if (!isAuthenticated || !userId) {
       e.preventDefault();
       e.stopPropagation();
       navigate("/signin");
