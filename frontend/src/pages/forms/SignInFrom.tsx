@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSignIn } from "@/hooks/useSignIn";
+import { Logo } from "@/components/common/Logo";
 
 export default function SignInForm() {
     const navigate = useNavigate();
@@ -39,6 +40,9 @@ export default function SignInForm() {
 
     return (
         <div className="shadow-input mx-auto w-full max-w-md rounded-none bg-white p-4 md:rounded-2xl md:p-8 dark:bg-black">
+            <div className="mb-6">
+                <Logo to="/" size={34} />
+            </div>
             <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
                 Welcome back
             </h2>
