@@ -34,7 +34,7 @@ export function HeroSection() {
       {/* Subtitle */}
       <p className="mt-5 max-w-xl text-center text-lg leading-relaxed text-slate-500">
         A minimal, fast collaborative editor. Create a document, share the link,
-        and start writing with your team — no sign-up required.
+        and start writing with your team.
       </p>
 
       {/* CTA */}
