@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useEffect } from "react";
 import { useCheckAuth } from "@/hooks/useCheckAuth";
 import { Logo } from "@/components/common/Logo";
+import { FolderOpen } from "lucide-react";
 
 export function LandingPage() {
   const { user, isAuthenticated } = useAuthStore();
@@ -17,7 +18,6 @@ export function LandingPage() {
 
   const userInitial = (user?.userName || user?.email || "U").charAt(0).toUpperCase();
 
-
   return (
     <div className="min-h-screen bg-slate-50">
       <div
@@ -30,16 +30,26 @@ export function LandingPage() {
       />
 
       <div className="relative">
-        <nav className="flex items-center justify-between px-6 py-4">
+        <nav className="flex items-center justify-between px-6 py-4 border-b border-slate-200/60 bg-white/70 backdrop-blur-md sticky top-0 z-20">
           <Logo to="/" size={32} />
 
           <div className="flex items-center gap-3">
             {isAuthenticated && user ? (
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white shadow-sm ring-2 ring-slate-200 select-none transition-transform hover:scale-105 cursor-default"
-                title={user.userName || user.email}
-              >
-                {userInitial}
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/documents"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-xs transition-all hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300"
+                >
+                  <FolderOpen className="h-3.5 w-3.5 text-slate-500" />
+                  <span>Your Documents</span>
+                </Link>
+
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white shadow-sm ring-2 ring-slate-200 select-none transition-transform hover:scale-105 cursor-default"
+                  title={user.userName || user.email}
+                >
+                  {userInitial}
+                </div>
               </div>
             ) : (
               <Link
@@ -53,11 +63,12 @@ export function LandingPage() {
           </div>
         </nav>
 
+        {/* Hero Section */}
         <HeroSection />
 
         {/* Footer */}
         <footer className="border-t border-slate-200 py-8 text-center text-sm text-slate-400">
-          Built with focus. No distractions.
+          Built with focus. Real-time collaborative editing.
         </footer>
       </div>
     </div>

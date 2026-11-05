@@ -1,5 +1,7 @@
-import { FileText, Users, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { FileText, Users, Zap, FolderOpen } from "lucide-react";
 import { CreateDocButton } from "./CreateDocButton";
+import { Button } from "@/components/ui/button";
 
 const features = [
   {
@@ -20,6 +22,8 @@ const features = [
 ];
 
 export function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <section className="flex flex-col items-center justify-center px-6 pt-32 pb-20">
 
@@ -38,8 +42,17 @@ export function HeroSection() {
       </p>
 
       {/* CTA */}
-      <div className="mt-10">
+      <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <CreateDocButton />
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={() => navigate("/documents")}
+          className="h-12 cursor-pointer gap-2 rounded-xl border-slate-200 bg-white px-6 text-base font-medium text-slate-700 shadow-sm transition-all duration-200 hover:border-slate-300 hover:bg-slate-50 hover:shadow"
+        >
+          <FolderOpen className="h-5 w-5 text-slate-500" />
+          Your Documents
+        </Button>
       </div>
 
       {/* Feature Cards */}

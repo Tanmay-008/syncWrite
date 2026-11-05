@@ -1,5 +1,15 @@
 import { axiosAPI } from "@/lib/axios";
 
+export interface UserDocument {
+  id: string;
+  documentName: string;
+  authorId: string;
+  isOwner: boolean;
+  collaboratorsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PendingUser {
   userId: string;
   userName: string;
@@ -74,6 +84,26 @@ export const rejectDocumentAccess = async (docId: string, targetUserId: string) 
     return response.data;
   } catch (error) {
     console.error("Error rejecting document access:", error);
+    throw error;
+  }
+};
+
+export const getUserDocuments = async (): Promise<UserDocument[]> => {
+  try {
+    const response = await axiosAPI.get("/documents/user-documents");
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Error fetching user documents:", error);
+    throw error;
+  }
+};
+
+export const deleteDocument = async (docId: string) => {
+  try {
+    const response = await axiosAPI.delete(`/documents/${docId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting document:", error);
     throw error;
   }
 };

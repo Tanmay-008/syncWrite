@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LandingPage } from "./pages/LandingPage";
 import { DocumentPage } from "./pages/DocumentPage";
+import { UserDocumentsPage } from "./pages/UserDocumentsPage";
 import SignInForm from "./pages/forms/SignInFrom";
 import SignupFormDemo from "./pages/forms/SignUpFrom";
 
@@ -9,6 +10,8 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/documents" element={<UserDocumentsPage />} />
+        <Route path="/my-documents" element={<UserDocumentsPage />} />
         <Route path="/document/:docId" element={<DocumentPage />} />
         <Route
           path="/signin"
