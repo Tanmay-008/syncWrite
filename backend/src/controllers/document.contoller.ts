@@ -5,6 +5,8 @@ import {
     requestDocumentAccess,
     approveDocumentAccess,
     rejectDocumentAccess,
+    getUserDocumentsService,
+    deleteDocumentService,
 } from "../service/documnets.service";
 import { ApiResponse } from "../utils/ApiResponse";
 import { AuthRequest } from "../middleware/auth.middleware";
@@ -91,6 +93,39 @@ export const rejectAccess = async (req: AuthRequest, res: Response, next: NextFu
             throw new ApiError(400, "targetUserId is required");
         }
         const response = await rejectDocumentAccess(docId, authorId, targetUserId);
+        return res.status(200).json(
+            new ApiResponse(200, response, response.message)
+        );
+    } catch (error) {
+        next(error);
+        return error;
+    }
+};
+
+export const getUserDocuments = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new ApiError(401, "User not authenticated");
+        }
+        const response = await getUserDocumentsService(userId);
+        return res.status(200).json(
+            new ApiResponse(200, response, "User documents fetched successfully")
+        );
+    } catch (error) {
+        next(error);
+        return error;
+    }
+};
+
+export const deleteDocument = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const docId = req.params.id as string;
+        const userId = req.user?.userId;
+        if (!userId) {
+            throw new ApiError(401, "User not authenticated");
+        }
+        const response = await deleteDocumentService(docId, userId);
         return res.status(200).json(
             new ApiResponse(200, response, response.message)
         );

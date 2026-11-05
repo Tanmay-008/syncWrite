@@ -208,3 +208,53 @@ export const getDocumentAccessInfo = async (docId: string, userId: string) => {
         throw new ApiError(500, "Failed to load document collaborator details");
     }
 };
+
+export const getUserDocumentsService = async (userId: string) => {
+    try {
+        const uId = userId.toString();
+        const docs = await Document.find({
+            $or: [
+                { authorId: uId },
+                { collaborators: uId },
+            ],
+        })
+            .select("documentName authorId collaborators createdAt updatedAt")
+            .sort({ updatedAt: -1 })
+            .lean();
+
+        const formattedDocs = docs.map((doc: any) => ({
+            id: doc._id.toString(),
+            documentName: doc.documentName || "Untitled Document",
+            authorId: doc.authorId,
+            isOwner: doc.authorId?.toString() === uId,
+            collaboratorsCount: doc.collaborators?.length || 0,
+            createdAt: doc.createdAt,
+            updatedAt: doc.updatedAt,
+        }));
+
+        logger.info(`Fetched ${formattedDocs.length} documents for user ${userId}`);
+        return formattedDocs;
+    } catch (error: any) {
+        logger.error(`Failed to fetch documents for user ${userId}: ${error?.message}`);
+        throw new ApiError(500, "Failed to fetch user documents", error?.message);
+    }
+};
+
+export const deleteDocumentService = async (docId: string, userId: string) => {
+    validateObjectId(docId, "Document ID");
+    const doc = await Document.findById(docId);
+    if (!doc) {
+        throw new ApiError(404, "Document not found");
+    }
+
+    if (doc.authorId?.toString() !== userId.toString()) {
+        throw new ApiError(403, "Only the author can delete this document");
+    }
+
+    await Document.findByIdAndDelete(docId);
+    logger.info(`User ${userId} deleted document ${docId}`);
+    return { message: "Document deleted successfully" };
+};
+
+
+
