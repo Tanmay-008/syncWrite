@@ -2,6 +2,7 @@ import { useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { TextStyle, FontSize } from "@tiptap/extension-text-style";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import {
@@ -76,6 +77,8 @@ export function SyncWriteEditor({
                     },
                     undoRedo: false,
                 }),
+                TextStyle,
+                FontSize,
                 AuthorHighlight.configure({
                     authorId: userSession.id,
                     authorName: userSession.name,

@@ -3,9 +3,8 @@ import {
   Bold,
   Italic,
   Strikethrough,
-  Heading1,
-  Heading2,
-  Heading3,
+  Minus,
+  Plus,
   List,
   ListOrdered,
   Undo2,
@@ -34,11 +33,126 @@ const textFormatting: ToolbarAction[] = [
   { icon: Strikethrough, label: "Strikethrough", shortcut: "⌘⇧X", action: (e) => e.chain().focus().toggleStrike().run(), isActive: (e) => e.isActive("strike") },
 ];
 
-const headings: ToolbarAction[] = [
-  { icon: Heading1, label: "Heading 1", shortcut: "⌘⌥1", action: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(), isActive: (e) => e.isActive("heading", { level: 1 }) },
-  { icon: Heading2, label: "Heading 2", shortcut: "⌘⌥2", action: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(), isActive: (e) => e.isActive("heading", { level: 2 }) },
-  { icon: Heading3, label: "Heading 3", shortcut: "⌘⌥3", action: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(), isActive: (e) => e.isActive("heading", { level: 3 }) },
-];
+function getActiveFontSize(editor: Editor): number {
+  const currentFontSizeStr = editor.getAttributes("textStyle").fontSize;
+  if (currentFontSizeStr) {
+    const parsed = parseInt(currentFontSizeStr, 10);
+    if (!isNaN(parsed)) return parsed;
+  }
+  if (editor.isActive("heading", { level: 1 })) return 32;
+  if (editor.isActive("heading", { level: 2 })) return 24;
+  if (editor.isActive("heading", { level: 3 })) return 20;
+  return 16;
+}
+
+function FontSizeControl({ editor }: { editor: Editor }) {
+  const currentSize = getActiveFontSize(editor);
+  const [inputValue, setInputValue] = useState<string>(String(currentSize));
+
+  useEffect(() => {
+    setInputValue(String(currentSize));
+  }, [currentSize]);
+
+  const applySize = (newSize: number) => {
+    const clamped = Math.max(8, Math.min(96, newSize));
+    setInputValue(String(clamped));
+    editor.chain().focus().setFontSize(`${clamped}px`).run();
+  };
+
+  const handleDecrease = () => {
+    applySize(currentSize - 1);
+  };
+
+  const handleIncrease = () => {
+    applySize(currentSize + 1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const num = parseInt(inputValue, 10);
+      if (!isNaN(num)) {
+        applySize(num);
+      } else {
+        setInputValue(String(currentSize));
+      }
+      editor.commands.focus();
+    }
+  };
+
+  const handleBlur = () => {
+    const num = parseInt(inputValue, 10);
+    if (!isNaN(num)) {
+      applySize(num);
+    } else {
+      setInputValue(String(currentSize));
+    }
+  };
+
+  return (
+    <div className="flex items-center rounded-md border border-slate-200 bg-white shadow-2xs">
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleDecrease();
+              }}
+              aria-label="Decrease font size"
+              className="inline-flex h-8 w-7 cursor-pointer items-center justify-center rounded-l-md text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            >
+              <Minus className="h-3.5 w-3.5" />
+            </button>
+          }
+        />
+        <TooltipContent side="bottom" className="flex items-center gap-2">
+          <span>Decrease font size</span>
+          <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">
+            ⌘⇧,
+          </kbd>
+        </TooltipContent>
+      </Tooltip>
+
+      <input
+        type="text"
+        inputMode="numeric"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        onFocus={(e) => e.target.select()}
+        aria-label="Font size"
+        className="h-8 w-9 border-x border-slate-200 bg-transparent text-center font-mono text-xs font-medium text-slate-800 transition-colors focus:bg-slate-50 focus:outline-none"
+      />
+
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleIncrease();
+              }}
+              aria-label="Increase font size"
+              className="inline-flex h-8 w-7 cursor-pointer items-center justify-center rounded-r-md text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </button>
+          }
+        />
+        <TooltipContent side="bottom" className="flex items-center gap-2">
+          <span>Increase font size</span>
+          <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">
+            ⌘⇧.
+          </kbd>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
 
 const lists: ToolbarAction[] = [
   { icon: List, label: "Bullet List", shortcut: "⌘⇧8", action: (e) => e.chain().focus().toggleBulletList().run(), isActive: (e) => e.isActive("bulletList") },
@@ -107,9 +221,29 @@ export function EditorToolbar({ editor }: { editor: Editor | null }) {
     editor.on("transaction", handleUpdate);
     editor.on("selectionUpdate", handleUpdate);
 
+    const handleShortcuts = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey;
+      if (isMod && e.shiftKey && editor.isFocused) {
+        if (e.key === "<" || e.key === ",") {
+          e.preventDefault();
+          const current = getActiveFontSize(editor);
+          const next = Math.max(8, current - 1);
+          editor.chain().focus().setFontSize(`${next}px`).run();
+        } else if (e.key === ">" || e.key === ".") {
+          e.preventDefault();
+          const current = getActiveFontSize(editor);
+          const next = Math.min(96, current + 1);
+          editor.chain().focus().setFontSize(`${next}px`).run();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleShortcuts);
+
     return () => {
       editor.off("transaction", handleUpdate);
       editor.off("selectionUpdate", handleUpdate);
+      window.removeEventListener("keydown", handleShortcuts);
     };
   }, [editor]);
 
@@ -122,7 +256,7 @@ export function EditorToolbar({ editor }: { editor: Editor | null }) {
       <div className="mx-auto flex max-w-4xl items-center gap-1 px-6 py-2">
         <ToolbarGroup actions={textFormatting} editor={editor} />
         <Separator orientation="vertical" className="mx-1.5 h-6" />
-        <ToolbarGroup actions={headings} editor={editor} />
+        <FontSizeControl editor={editor} />
         <Separator orientation="vertical" className="mx-1.5 h-6" />
         <ToolbarGroup actions={lists} editor={editor} />
         <Separator orientation="vertical" className="mx-1.5 h-6" />
