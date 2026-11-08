@@ -134,14 +134,13 @@
   }
 }
 
-/* Editor & ProseMirror Typography */
 .tiptap,
 .ProseMirror {
   outline: none;
 }
 
-.tiptap > * + *,
-.ProseMirror > * + * {
+.tiptap>*+*,
+.ProseMirror>*+* {
   margin-top: 0.75em;
 }
 
@@ -269,7 +268,6 @@
   filter: brightness(0.92);
 }
 
-/* Real-time Collaboration Carets & Labels */
 .collaboration-carets__caret {
   position: relative;
   margin-left: -1px;

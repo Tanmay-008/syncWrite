@@ -1,6 +1,6 @@
 import { Mark, mergeAttributes } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
-import { ySyncPluginKey } from "@tiptap/y-tiptap";
+import { Fragment, Slice, Node as ProseMirrorNode } from "@tiptap/pm/model";
 
 export interface AuthorHighlightOptions {
   authorId: string;
@@ -25,7 +25,7 @@ declare module "@tiptap/core" {
 export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
   name: "authorHighlight",
 
-  inclusive: false,
+  inclusive: true,
   excludes: "authorHighlight",
 
   addOptions() {
@@ -122,78 +122,51 @@ export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
     const options = this.options;
     const pluginKey = new PluginKey("authorHighlightPlugin");
 
+    const createAuthorMark = () =>
+      markType.create({
+        authorId: options.authorId,
+        authorName: options.authorName,
+        color: options.authorColor,
+      });
+
+    const applyMarkToFragment = (fragment: Fragment): Fragment => {
+      const authorMark = createAuthorMark();
+      const nodes: ProseMirrorNode[] = [];
+
+      fragment.forEach((node) => {
+        if (node.isText) {
+          const cleanMarks = node.marks.filter((m) => m.type !== markType);
+          nodes.push(node.mark([...cleanMarks, authorMark]));
+        } else {
+          nodes.push(node.copy(applyMarkToFragment(node.content)));
+        }
+      });
+
+      return Fragment.fromArray(nodes);
+    };
+
     return [
       new Plugin({
         key: pluginKey,
-        appendTransaction(transactions, _oldState, newState) {
-          const docChanged = transactions.some((tr) => tr.docChanged);
-          if (!docChanged) return null;
+        props: {
+          handleTextInput(view, from, to, text) {
+            const { state, dispatch } = view;
+            const authorMark = createAuthorMark();
 
-          if (transactions.some((tr) => tr.getMeta("authorHighlightApplied"))) {
-            return null;
-          }
+            const tr = state.tr.insertText(text, from, to);
+            tr.addMark(from, from + text.length, authorMark);
 
-          const isRemote = transactions.some(
-            (tr) =>
-              !!tr.getMeta(ySyncPluginKey) ||
-              !!tr.getMeta("y-sync$") ||
-              !!tr.getMeta("history$")
-          );
-          if (isRemote) return null;
+            dispatch(tr);
+            return true;
+          },
 
-          const tr = newState.tr;
-          let hasChanges = false;
-
-          const authorMark = markType.create({
-            authorId: options.authorId,
-            authorName: options.authorName,
-            color: options.authorColor,
-          });
-
-          transactions.forEach((transaction) => {
-            if (!transaction.docChanged) return;
-
-            transaction.steps.forEach((step, stepIndex) => {
-              const stepMap = step.getMap();
-              const mappingAfterStep = transaction.mapping.slice(stepIndex + 1);
-
-              stepMap.forEach((_oldStart, _oldEnd, newStart, newEnd) => {
-                const mappedStart = mappingAfterStep.map(newStart, -1);
-                const mappedEnd = mappingAfterStep.map(newEnd, 1);
-
-                if (mappedEnd > mappedStart) {
-                  newState.doc.nodesBetween(mappedStart, mappedEnd, (node, pos) => {
-                    if (node.isText) {
-                      const from = Math.max(mappedStart, pos);
-                      const to = Math.min(mappedEnd, pos + node.nodeSize);
-                      if (from < to) {
-                        const hasExactMark = node.marks.some(
-                          (m) =>
-                            m.type === markType &&
-                            m.attrs.authorId === options.authorId &&
-                            m.attrs.color === options.authorColor
-                        );
-
-                        if (!hasExactMark) {
-                          tr.removeMark(from, to, markType);
-                          tr.addMark(from, to, authorMark);
-                          hasChanges = true;
-                        }
-                      }
-                    }
-                  });
-                }
-              });
-            });
-          });
-
-          if (hasChanges) {
-            tr.setMeta("authorHighlightApplied", true);
-            tr.setMeta("addToHistory", false);
-            return tr;
-          }
-
-          return null;
+          transformPasted(slice) {
+            return new Slice(
+              applyMarkToFragment(slice.content),
+              slice.openStart,
+              slice.openEnd
+            );
+          },
         },
       }),
     ];

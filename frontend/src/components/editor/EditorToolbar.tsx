@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Bold,
   Italic,
@@ -10,7 +11,6 @@ import {
   Undo2,
   Redo2,
 } from "lucide-react";
-import { Toggle } from "@/components/ui/toggle";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -50,39 +50,69 @@ const history: ToolbarAction[] = [
   { icon: Redo2, label: "Redo", shortcut: "⌘⇧Z", action: (e) => e.chain().focus().redo().run(), isActive: () => false, disabled: (e) => !e.can().redo() },
 ];
 
-function ToolbarGroup({ actions, editor }: { actions: ToolbarAction[], editor: Editor }) {
+function ToolbarGroup({ actions, editor }: { actions: ToolbarAction[]; editor: Editor }) {
   return (
     <div className="flex items-center gap-0.5">
-      {actions.map((action) => (
-        <Tooltip key={action.label}>
-          <TooltipTrigger render={
-            <Toggle
-              size="sm"
-              pressed={action.isActive(editor)}
-              onPressedChange={() => action.action(editor)}
-              onMouseDown={(e) => e.preventDefault()}
-              disabled={action.disabled?.(editor)}
-              aria-label={action.label}
-              className="h-8 w-8 cursor-pointer rounded-md p-0 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 data-[state=on]:bg-slate-100 data-[state=on]:text-slate-900"
-            >
-              <action.icon className="h-4 w-4" />
-            </Toggle>
-          } />
-          <TooltipContent side="bottom" className="flex items-center gap-2">
-            <span>{action.label}</span>
-            {action.shortcut && (
-              <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">
-                {action.shortcut}
-              </kbd>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      ))}
+      {actions.map((action) => {
+        const active = action.isActive(editor);
+        const isDisabled = action.disabled?.(editor) ?? false;
+
+        return (
+          <Tooltip key={action.label}>
+            <TooltipTrigger
+              render={
+                <button
+                  type="button"
+                  disabled={isDisabled}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    if (!isDisabled) {
+                      action.action(editor);
+                    }
+                  }}
+                  aria-label={action.label}
+                  data-state={active ? "on" : "off"}
+                  className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md p-0 transition-colors disabled:pointer-events-none disabled:opacity-40 ${active
+                    ? "bg-slate-200 text-slate-900 font-semibold"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                >
+                  <action.icon className="h-4 w-4" />
+                </button>
+              }
+            />
+            <TooltipContent side="bottom" className="flex items-center gap-2">
+              <span>{action.label}</span>
+              {action.shortcut && (
+                <kbd className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">
+                  {action.shortcut}
+                </kbd>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
     </div>
   );
 }
 
 export function EditorToolbar({ editor }: { editor: Editor | null }) {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleUpdate = () => setTick((t) => t + 1);
+
+    editor.on("transaction", handleUpdate);
+    editor.on("selectionUpdate", handleUpdate);
+
+    return () => {
+      editor.off("transaction", handleUpdate);
+      editor.off("selectionUpdate", handleUpdate);
+    };
+  }, [editor]);
+
   if (!editor) {
     return null;
   }
