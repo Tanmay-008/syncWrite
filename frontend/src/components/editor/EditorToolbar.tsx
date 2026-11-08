@@ -60,6 +60,7 @@ function ToolbarGroup({ actions, editor }: { actions: ToolbarAction[], editor: E
               size="sm"
               pressed={action.isActive(editor)}
               onPressedChange={() => action.action(editor)}
+              onMouseDown={(e) => e.preventDefault()}
               disabled={action.disabled?.(editor)}
               aria-label={action.label}
               className="h-8 w-8 cursor-pointer rounded-md p-0 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 data-[state=on]:bg-slate-100 data-[state=on]:text-slate-900"

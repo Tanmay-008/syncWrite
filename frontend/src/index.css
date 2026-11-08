@@ -134,131 +134,169 @@
   }
 }
 
-@layer utilities {
-  .ProseMirror {
-    >*+* {
-      margin-top: 0.75em;
-    }
+/* Editor & ProseMirror Typography */
+.tiptap,
+.ProseMirror {
+  outline: none;
+}
 
-    p {
-      margin-top: 0.5em;
-      margin-bottom: 0.5em;
-    }
+.tiptap > * + *,
+.ProseMirror > * + * {
+  margin-top: 0.75em;
+}
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      line-height: 1.1;
-      font-weight: 700;
-      margin-top: 1.5em;
-      margin-bottom: 0.5em;
-    }
+.tiptap p,
+.ProseMirror p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
 
-    h1 {
-      font-size: 2.25rem;
-    }
+.tiptap h1,
+.ProseMirror h1 {
+  font-size: 2.25rem !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.5em !important;
+}
 
-    h2 {
-      font-size: 1.5rem;
-    }
+.tiptap h2,
+.ProseMirror h2 {
+  font-size: 1.5rem !important;
+  line-height: 1.3 !important;
+  font-weight: 700 !important;
+  margin-top: 1.25em !important;
+  margin-bottom: 0.5em !important;
+}
 
-    h3 {
-      font-size: 1.25rem;
-    }
+.tiptap h3,
+.ProseMirror h3 {
+  font-size: 1.25rem !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+  margin-top: 1em !important;
+  margin-bottom: 0.5em !important;
+}
 
-    ul {
-      list-style-type: disc;
-      padding-left: 1.5rem;
-      margin-top: 0.5em;
-      margin-bottom: 0.5em;
-    }
+.tiptap h4,
+.ProseMirror h4 {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  margin-top: 0.85em !important;
+  margin-bottom: 0.4em !important;
+}
 
-    ol {
-      list-style-type: decimal;
-      padding-left: 1.5rem;
-      margin-top: 0.5em;
-      margin-bottom: 0.5em;
-    }
+.tiptap h5,
+.ProseMirror h5 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin-top: 0.75em !important;
+  margin-bottom: 0.35em !important;
+}
 
-    blockquote {
-      border-left: 3px solid var(--color-border);
-      padding-left: 1rem;
-      margin-left: 0;
-      margin-right: 0;
-      font-style: italic;
-    }
+.tiptap h6,
+.ProseMirror h6 {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  margin-top: 0.75em !important;
+  margin-bottom: 0.35em !important;
+}
 
-    code {
-      background-color: var(--color-muted);
-      border-radius: 0.25rem;
-      padding: 0.2rem 0.4rem;
-      font-size: 0.875em;
-    }
+.tiptap ul,
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
 
-    pre {
-      background: var(--color-foreground);
-      color: var(--color-background);
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
+.tiptap ol,
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
 
-      code {
-        color: inherit;
-        padding: 0;
-        background: none;
-        font-size: 0.875rem;
-      }
-    }
-  }
+.tiptap blockquote,
+.ProseMirror blockquote {
+  border-left: 3px solid var(--color-border);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+}
 
-  .ProseMirror p:empty:first-child::before {
-    content: "Start writing...";
-    color: var(--color-muted-foreground);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  }
+.tiptap code,
+.ProseMirror code {
+  background-color: var(--color-muted);
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.875em;
+}
 
-  .author-highlight {
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-    cursor: text;
-  }
+.tiptap pre,
+.ProseMirror pre {
+  background: var(--color-foreground);
+  color: var(--color-background);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
 
-  .author-highlight:hover {
-    filter: brightness(0.92);
-  }
+.tiptap pre code,
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.875rem;
+}
 
-  /* Real-time Collaboration Carets & Labels */
-  .collaboration-carets__caret {
-    position: relative;
-    margin-left: -1px;
-    margin-right: -1px;
-    border-left: 1px solid #0d0d0d;
-    border-right: 1px solid #0d0d0d;
-    word-break: normal;
-    pointer-events: none;
-  }
+.tiptap p:empty:first-child::before,
+.ProseMirror p:empty:first-child::before {
+  content: "Start writing...";
+  color: var(--color-muted-foreground);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
 
-  .collaboration-carets__label {
-    position: absolute;
-    top: -1.4em;
-    left: -1px;
-    font-size: 11px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-    user-select: none;
-    color: #fff;
-    padding: 1px 4px;
-    border-radius: 3px;
-    white-space: nowrap;
-    pointer-events: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  }
+.author-highlight {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  cursor: text;
+}
 
-  .shadow-input {
-    box-shadow: 0px 2px 3px -1px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px rgba(25, 28, 33, 0.02), 0px 0px 0px 1px rgba(25, 28, 33, 0.08);
-  }
+.author-highlight:hover {
+  filter: brightness(0.92);
+}
+
+/* Real-time Collaboration Carets & Labels */
+.collaboration-carets__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  word-break: normal;
+  pointer-events: none;
+}
+
+.collaboration-carets__label {
+  position: absolute;
+  top: -1.4em;
+  left: -1px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  user-select: none;
+  color: #fff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-input {
+  box-shadow: 0px 2px 3px -1px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px rgba(25, 28, 33, 0.02), 0px 0px 0px 1px rgba(25, 28, 33, 0.08);
 }

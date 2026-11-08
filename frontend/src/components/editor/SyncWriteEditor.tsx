@@ -2,6 +2,8 @@ import { useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Heading from "@tiptap/extension-heading";
+import { mergeAttributes } from "@tiptap/core";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCaret from "@tiptap/extension-collaboration-caret";
 import {
@@ -70,7 +72,31 @@ export function SyncWriteEditor({
     const editor = useEditor(
         {
             extensions: [
-                StarterKit.configure({ undoRedo: false }),
+                StarterKit.configure({
+                    heading: false,
+                    undoRedo: false,
+                }),
+                Heading.extend({
+                    renderHTML({ node, HTMLAttributes }) {
+                        const hasLevel = this.options.levels.includes(node.attrs.level);
+                        const level = hasLevel ? node.attrs.level : this.options.levels[0];
+                        const levelClasses: Record<number, string> = {
+                            1: "text-3xl font-bold tracking-tight text-slate-900 mt-6 mb-2.5 block",
+                            2: "text-2xl font-bold tracking-tight text-slate-900 mt-5 mb-2 block",
+                            3: "text-xl font-semibold tracking-tight text-slate-800 mt-4 mb-1.5 block",
+                        };
+
+                        return [
+                            `h${level}`,
+                            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+                                class: levelClasses[level] || "",
+                            }),
+                            0,
+                        ];
+                    },
+                }).configure({
+                    levels: [1, 2, 3],
+                }),
                 AuthorHighlight.configure({
                     authorId: userSession.id,
                     authorName: userSession.name,
