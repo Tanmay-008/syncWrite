@@ -5,16 +5,16 @@ export interface UserSession {
 }
 
 export const COLLAB_PALETTE = [
-  "#6366f1", // Indigo
-  "#10b981", // Emerald
-  "#f43f5e", // Rose
-  "#d97706", // Amber
-  "#8b5cf6", // Violet
-  "#06b6d4", // Cyan
-  "#ea580c", // Orange
-  "#ec4899", // Pink
-  "#14b8a6", // Teal
-  "#3b82f6", // Blue
+  "#6366f1",
+  "#10b981",
+  "#f43f5e",
+  "#d97706",
+  "#8b5cf6",
+  "#06b6d4",
+  "#ea580c",
+  "#ec4899",
+  "#14b8a6",
+  "#3b82f6",
 ];
 
 export function getUserColor(idOrName: string): string {

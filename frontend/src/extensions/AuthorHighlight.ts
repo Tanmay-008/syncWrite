@@ -25,6 +25,9 @@ declare module "@tiptap/core" {
 export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
   name: "authorHighlight",
 
+  inclusive: false,
+  excludes: "authorHighlight",
+
   addOptions() {
     return {
       authorId: "anonymous",
@@ -122,19 +125,20 @@ export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
     return [
       new Plugin({
         key: pluginKey,
-        appendTransaction(transactions, newState) {
-          // If no document changes happened, skip
+        appendTransaction(transactions, _oldState, newState) {
           const docChanged = transactions.some((tr) => tr.docChanged);
           if (!docChanged) return null;
 
-          // If this transaction was already triggered by our own auto-tagger, avoid loops
           if (transactions.some((tr) => tr.getMeta("authorHighlightApplied"))) {
             return null;
           }
 
-          // If any transaction originated from Yjs remote sync, skip tagging
-          // because remote text was already authored and tagged by its creator!
-          const isRemote = transactions.some((tr) => !!tr.getMeta(ySyncPluginKey));
+          const isRemote = transactions.some(
+            (tr) =>
+              !!tr.getMeta(ySyncPluginKey) ||
+              !!tr.getMeta("y-sync$") ||
+              !!tr.getMeta("history$")
+          );
           if (isRemote) return null;
 
           const tr = newState.tr;
@@ -149,24 +153,29 @@ export const AuthorHighlight = Mark.create<AuthorHighlightOptions>({
           transactions.forEach((transaction) => {
             if (!transaction.docChanged) return;
 
-            // Iterate over every step in the transaction to find newly inserted text
-            transaction.steps.forEach((step) => {
+            transaction.steps.forEach((step, stepIndex) => {
               const stepMap = step.getMap();
+              const mappingAfterStep = transaction.mapping.slice(stepIndex + 1);
+
               stepMap.forEach((_oldStart, _oldEnd, newStart, newEnd) => {
-                // If text was inserted or replaced
-                if (newEnd > newStart) {
-                  newState.doc.nodesBetween(newStart, newEnd, (node, pos) => {
+                const mappedStart = mappingAfterStep.map(newStart, -1);
+                const mappedEnd = mappingAfterStep.map(newEnd, 1);
+
+                if (mappedEnd > mappedStart) {
+                  newState.doc.nodesBetween(mappedStart, mappedEnd, (node, pos) => {
                     if (node.isText) {
-                      const from = Math.max(newStart, pos);
-                      const to = Math.min(newEnd, pos + node.nodeSize);
+                      const from = Math.max(mappedStart, pos);
+                      const to = Math.min(mappedEnd, pos + node.nodeSize);
                       if (from < to) {
-                        const existingMark = node.marks.find(
+                        const hasExactMark = node.marks.some(
                           (m) =>
                             m.type === markType &&
                             m.attrs.authorId === options.authorId &&
                             m.attrs.color === options.authorColor
                         );
-                        if (!existingMark) {
+
+                        if (!hasExactMark) {
+                          tr.removeMark(from, to, markType);
                           tr.addMark(from, to, authorMark);
                           hasChanges = true;
                         }
