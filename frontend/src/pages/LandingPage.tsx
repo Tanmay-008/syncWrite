@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useCheckAuth } from "@/hooks/useCheckAuth";
 import { Logo } from "@/components/common/Logo";
 import { FolderOpen } from "lucide-react";
+import { UserProfileMenu } from "@/components/common/UserProfileMenu";
 
 export function LandingPage() {
   const { user, isAuthenticated } = useAuthStore();
@@ -15,8 +16,6 @@ export function LandingPage() {
       checkAuth();
     }
   }, [user, checkAuth]);
-
-  const userInitial = (user?.userName || user?.email || "U").charAt(0).toUpperCase();
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -44,12 +43,7 @@ export function LandingPage() {
                   <span>Your Documents</span>
                 </Link>
 
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white shadow-sm ring-2 ring-slate-200 select-none transition-transform hover:scale-105 cursor-default"
-                  title={user.userName || user.email}
-                >
-                  {userInitial}
-                </div>
+                <UserProfileMenu />
               </div>
             ) : (
               <Link

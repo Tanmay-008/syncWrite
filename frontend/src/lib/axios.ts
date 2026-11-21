@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const getBaseUrl = () => {
     if (import.meta.env.PROD) {
@@ -18,7 +19,32 @@ const axiosConfig = axios.create({
 
 axiosConfig.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (
+            error.response?.status === 401 &&
+            !originalRequest._retry &&
+            !originalRequest.url?.includes("/user/signin") &&
+            !originalRequest.url?.includes("/user/signup") &&
+            !originalRequest.url?.includes("/user/refresh-access-token") &&
+            !originalRequest.url?.includes("/user/logout")
+        ) {
+            originalRequest._retry = true;
+            try {
+                await axios.post(
+                    `${getBaseUrl()}/user/refresh-access-token`,
+                    {},
+                    { withCredentials: true }
+                );
+                return axiosConfig(originalRequest);
+            } catch (refreshError) {
+                useAuthStore.getState().setUser(null);
+                useAuthStore.getState().setIsAuthenticated(false);
+                return Promise.reject(refreshError);
+            }
+        }
+
         console.error("API Error:", error.response?.data || error.message);
         return Promise.reject(error);
     }

@@ -5,6 +5,7 @@ import { CreateDocButton } from "@/components/landing/CreateDocButton";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCheckAuth } from "@/hooks/useCheckAuth";
 import { Logo } from "@/components/common/Logo";
+import { UserProfileMenu } from "@/components/common/UserProfileMenu";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
@@ -27,8 +28,6 @@ export function UserDocumentsPage() {
 
     verify();
   }, [checkAuth, navigate, location]);
-
-  const userInitial = (user?.userName || user?.email || "U").charAt(0).toUpperCase();
 
   if (isLoading || !isAuthenticated || !user) {
     return (
@@ -72,12 +71,7 @@ export function UserDocumentsPage() {
             <span className="hidden sm:inline text-xs font-medium text-slate-600">
               {user.userName || user.email}
             </span>
-            <div
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white shadow-xs ring-2 ring-slate-200 select-none"
-              title={user.userName || user.email}
-            >
-              {userInitial}
-            </div>
+            <UserProfileMenu size="sm" />
           </div>
         </nav>
 
