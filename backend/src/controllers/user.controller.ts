@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { UserResponse } from "../types/type";
 import { getMe, userLogin, userRegister } from "../service/user.service";
-import { generateAccessToken } from "../service/jwt.service";
+import { generateAccessToken, generateRefreshToken } from "../service/jwt.service";
 
 export const login = asyncHandler(async (req: any, res: any) => {
     const { userName, password } = req.body;
@@ -13,6 +13,13 @@ export const login = asyncHandler(async (req: any, res: any) => {
     const user = await userLogin({ userName, password });
 
     const accessToken = generateAccessToken({
+        userId: user._id.toString(),
+        role: user.role || "user",
+        email: user.email,
+        userName: user.userName,
+    });
+
+    const refreshToken = generateRefreshToken({
         userId: user._id.toString(),
         role: user.role || "user",
         email: user.email,
@@ -43,6 +50,7 @@ export const login = asyncHandler(async (req: any, res: any) => {
 
     res.status(200)
         .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
         .json(
             new ApiResponse(200, { user: userResponse }, "user login successfully")
         );
@@ -52,6 +60,13 @@ export const register = asyncHandler(async (req: any, res: any) => {
     const user = await userRegister(req.body);
 
     const accessToken = generateAccessToken({
+        userId: user._id.toString(),
+        role: user.role || "user",
+        email: user.email,
+        userName: user.userName,
+    });
+
+    const refreshToken = generateRefreshToken({
         userId: user._id.toString(),
         role: user.role || "user",
         email: user.email,
@@ -83,6 +98,7 @@ export const register = asyncHandler(async (req: any, res: any) => {
     };
     res.status(201)
         .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
         .json(
             new ApiResponse(201, { user: userResponse }, "user is created successfully")
         );
@@ -98,4 +114,16 @@ export const userAuthCheck = asyncHandler(async (req: any, res: any) => {
     return res.status(200).json(
         new ApiResponse(200, { user: user }, "user is authenticated successfully")
     );
+})
+
+export const refreshAccessToken = asyncHandler(async (req: any, res: any) => {
+    const { refreshToken } = req.cookies || req.body.refreshToken;
+
+    if (!refreshToken) {
+        throw new ApiError(401, "refresh token is missing");
+    }
+
+
+
+
 })
