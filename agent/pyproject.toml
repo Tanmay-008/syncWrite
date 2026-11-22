@@ -1,0 +1,7 @@
+[project]
+name = "syncwrite-agent"
+version = "0.1.0"
+description = "SyncWrite AI Agent for document generation and editing."
+readme = "README.md"
+requires-python = ">=3.15"
+dependencies = []
