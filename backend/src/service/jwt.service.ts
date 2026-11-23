@@ -34,7 +34,7 @@ export function generateAccessToken(payload: AccessTokenPayload) {
     return token;
 }
 
-export const generateRefreshToken = async (payload: AccessTokenPayload) => {
+export const generateRefreshToken = (payload: AccessTokenPayload) => {
     const secretKey = process.env.ACCESS_TOKEN_SECRET || process.env.SECRET_KEY;
 
     if (!secretKey) {

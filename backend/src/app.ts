@@ -21,6 +21,9 @@ app.use(cookieParser());
 
 import { router } from "./routes/documnets.routes";
 import userRouter from "./routes/user.routes";
+import { errorHandler } from "./utils/error.middleware";
 
 app.use("/api/v1/documents", router);
 app.use("/api/v1/user", userRouter);
+
+app.use(errorHandler);

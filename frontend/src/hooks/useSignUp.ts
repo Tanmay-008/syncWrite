@@ -1,6 +1,7 @@
 import { axiosAPI } from '@/lib/axios';
 import { useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
+import axios from 'axios';
 
 export const useSignUp = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,9 +22,26 @@ export const useSignUp = () => {
             }
 
             return true;
-        } catch (err: any) {
-            console.error("Failed to signup ,Please try again", err);
-            setError(err.response?.data?.message || "User already exists , Try Login");
+        } catch (err: unknown) {
+            console.error("Login failed:", err);
+
+            if (axios.isAxiosError(err)) {
+                const status = err.response?.status;
+                const backendMessage = err.response?.data?.message;
+
+                if (status === 409) {
+                    setError(backendMessage || "User already exists");
+                } else if (err.response) {
+                    setError(backendMessage || "Something went wrong. Please try again.");
+                } else if (err.request) {
+                    setError("Unable to connect to server. Check your internet connection.");
+                } else {
+                    setError("Request failed. Please try again.");
+                }
+            } else {
+                setError("An unexpected error occurred. Please try again.");
+            }
+
             return false;
         } finally {
             setIsLoading(false);

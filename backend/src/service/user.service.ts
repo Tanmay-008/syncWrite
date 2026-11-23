@@ -11,7 +11,7 @@ type UserLoginData = {
 export const userLogin = async (data: UserLoginData) => {
     const user = await UserModel.findOne({ userName: data.userName });
     if (!user) {
-        throw new ApiError(404, "User not found");
+        throw new ApiError(401, "Invalid username");
     }
 
     const isPasswordValid = await compareData(data.password, user.password);
