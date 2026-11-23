@@ -169,35 +169,41 @@ export const refreshAccessToken = asyncHandler(async (req: any, res: any) => {
 export const logoutUser = asyncHandler(async (req: any, res: any) => {
     const incomingRefreshToken = req.cookies?.refreshToken;
 
-    if (!incomingRefreshToken) {
-        throw new ApiError(401, "unauthorized request");
-    }
-
-    let decodedRefreshToken: any;
-    try {
-        decodedRefreshToken = await verifyRefreshToken(incomingRefreshToken);
-    } catch (error) {
+    const clearAuthCookies = () => {
         const options = getBaseCookieOptions();
-        return res
-            .status(200)
-            .clearCookie("accessToken", options)
-            .clearCookie("refreshToken", options)
-            .json(new ApiResponse(200, {}, "user logged out successfully"));
-    }
 
-    if (decodedRefreshToken?.userId) {
-        await UserModel.findByIdAndUpdate(decodedRefreshToken.userId, {
-            $unset: { refreshToken: 1 },
-        });
-    }
+        res.clearCookie("accessToken", options);
+        res.clearCookie("refreshToken", options);
+    };
 
-    const options = getBaseCookieOptions();
+    if (!incomingRefreshToken) {
+        clearAuthCookies();
 
-    return res
-        .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json(
-            new ApiResponse(200, {}, "user logged out successfully")
+        return res.status(200).json(
+            new ApiResponse(200, {}, "User logged out successfully")
         );
+    }
+    let decodedToken: any;
+    try {
+        decodedToken = await verifyRefreshToken(incomingRefreshToken);
+    } catch {
+    }
+
+    if (decodedToken?.userId) {
+        await UserModel.findOneAndUpdate(
+            {
+                _id: decodedToken.userId,
+                refreshToken: incomingRefreshToken,
+            },
+            {
+                $unset: { refreshToken: 1 },
+            }
+        );
+    }
+
+    clearAuthCookies();
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "User logged out successfully")
+    );
 });
